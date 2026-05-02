@@ -184,6 +184,65 @@ body {
   text-underline-offset: 0.2em;
 }
 
+/* Reader prose: tighter spacing for headings, lists, and code blocks. */
+
+/* Paragraph margins — overall tighter flow (also reduces gap to lists below). */
+.prose p {
+  margin-top: 0.7em;
+  margin-bottom: 0.7em;
+}
+
+/* Heading margins — reduce gap to surrounding text.
+   Heading-to-paragraph gap = max(heading.margin-bottom, p.margin-top). */
+.prose h1 {
+  margin-top: 0;
+  margin-bottom: 0.4em;
+}
+.prose h2 {
+  margin-top: 1.3em;
+  margin-bottom: 0.4em;
+}
+.prose h3 {
+  margin-top: 1em;
+  margin-bottom: 0.3em;
+}
+.prose :is(h4, h5, h6) {
+  margin-top: 0.8em;
+  margin-bottom: 0.3em;
+}
+
+/* Lists — closer to surrounding text and between items. */
+.prose :is(ul, ol) {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+.prose li {
+  margin-top: 0.15em;
+  margin-bottom: 0.15em;
+}
+
+/* Code block — tighter padding and line-height. SyntaxHighlighter wraps
+   the highlighted code in an inner <div> with its own background/padding;
+   neutralize the outer <pre> and let the inner div carry block styling. */
+.prose pre {
+  margin-top: 0.6em;
+  margin-bottom: 0.6em;
+  padding: 0;
+  background: transparent;
+  line-height: 1.4;
+}
+.prose pre > div {
+  padding: 0.6em 1em !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+  border-radius: 0.375rem;
+  background: #f6f8fa !important;
+}
+.prose pre code,
+.prose pre code span {
+  line-height: 1.4;
+}
+
 .mdxeditor {
   display: flex;
   flex-direction: column;

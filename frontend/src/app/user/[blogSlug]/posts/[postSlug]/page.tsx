@@ -5,7 +5,7 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeShiftHeading from 'rehype-shift-heading';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/default-highlight';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { github } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import React from 'react';
 import { Heading } from '@/types/common';
 import { unified } from 'unified';
@@ -87,11 +87,11 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
       <div className="flex w-full flex-col items-start xl:flex-row xl:gap-12">
         <div className="w-full min-w-0 max-w-4xl flex-1">
           <header className="mb-8 lg:mb-10">
-            <h1 className="mb-6 break-keep text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl lg:text-5xl">
+            <h1 className="mb-6 break-keep text-2xl font-extrabold leading-tight text-gray-900 sm:text-3xl lg:text-4xl">
               {post.title}
             </h1>
             <div className="flex items-center space-x-3 text-sm text-gray-500">
-              <span className="font-semibold text-indigo-600">{author.nickname}</span>
+              <span className="font-semibold text-gray-900">{author.nickname}</span>
               <span>•</span>
               <time dateTime={post.publishedAt}>
                 {new Date(post.publishedAt).toLocaleDateString('ko-KR')}
@@ -119,7 +119,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
                       PreTag="div"
                       children={String(children).replace(/\n$/, '')}
                       language={match[1]}
-                      style={dracula}
+                      style={github}
                     />
                   ) : (
                     <code {...rest} className={className}>
