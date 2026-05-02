@@ -70,7 +70,18 @@ const config: Config = {
         DEFAULT: {
           css: {
             fontFamily: theme('fontFamily.pretendard'),
-            lineHeight: '1.4',
+            lineHeight: '1.5',
+            letterSpacing: '-0.01em',
+            'h1, h2, h3, h4, h5, h6': {
+              letterSpacing: '-0.02em',
+            },
+          },
+        },
+        // prose-lg sets its own lineHeight (~1.78) per element; override
+        // so reader matches editor (1.5) on large screens too.
+        lg: {
+          css: {
+            lineHeight: '1.5',
           },
         },
       }),
