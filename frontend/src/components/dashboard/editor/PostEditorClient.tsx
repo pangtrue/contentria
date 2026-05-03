@@ -25,7 +25,6 @@ import {
   InsertAdmonition,
   InsertCodeBlock,
   InsertFrontmatter,
-  InsertImage,
   InsertTable,
   InsertThematicBreak,
   linkDialogPlugin,
@@ -44,6 +43,7 @@ import {
   UndoRedo,
 } from '@mdxeditor/editor';
 import { ForwardRefEditor } from '@/components/dashboard/ForwardRefEditor';
+import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
 import { createNewPostAction, updatePostAction } from '@/actions/post';
 import { uploadImageToR2 } from '@/lib/uploadImage';
 import { PostDetailResponse, PostStatus } from '@/types/api/posts';
@@ -341,7 +341,7 @@ function helloWorld() {
 
                             <Separator />
                             <CreateLink />
-                            <InsertImage />
+                            <CustomInsertImage />
                             <Separator />
                             <InsertTable />
                             <InsertThematicBreak />
