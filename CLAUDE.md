@@ -74,3 +74,9 @@ Utility classes (e.g., `MarkdownService`) are allowed in `application/` only if 
 - Provide a clear summary of changes.
 - List any breaking changes.
 - Ensure the base branch is always `main`.
+
+## 8. Working Style
+- **State assumptions before implementing.** If multiple interpretations exist, present them and ask — don't pick silently.
+- **Push back on overcomplicated approaches.** If a simpler path exists, say so before writing the longer version.
+- **Surface confusion immediately.** If something is unclear, stop and name what's confusing. Don't guess.
+- **Define verifiable success criteria for non-trivial tasks.** "Add validation" → "write failing tests for invalid inputs, then make them pass." "Fix the bug" → "write a reproducing test, then make it pass." "Refactor X" → "ensure tests pass before and after."
