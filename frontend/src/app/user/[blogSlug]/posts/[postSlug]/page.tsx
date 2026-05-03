@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkDirective from 'remark-directive';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeShiftHeading from 'rehype-shift-heading';
@@ -23,6 +25,17 @@ import { remarkAdmonitions } from '@/lib/markdown/remarkAdmonitions';
 import Admonition, { isAdmonitionType } from '@/components/blog/Admonition';
 
 export const dynamic = 'force-dynamic';
+
+const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    div: [
+      ...(defaultSchema.attributes?.div || []),
+      ['className', /^admonition(-(?:note|tip|info|caution|warning|danger))?$/],
+    ],
+  },
+};
 
 interface PostDetailPageProps {
   params: Promise<{
@@ -107,7 +120,10 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
           <article className="prose prose-indigo max-w-none lg:prose-lg prose-headings:scroll-mt-24">
             <Markdown
               remarkPlugins={[remarkGfm, remarkDirective, remarkAdmonitions]}
+              remarkRehypeOptions={{ allowDangerousHtml: true }}
               rehypePlugins={[
+                rehypeRaw,
+                [rehypeSanitize, sanitizeSchema],
                 rehypeSlug,
                 [rehypeAutolinkHeadings, { behavior: 'wrap' }],
                 [rehypeShiftHeading, { shift: 1 }],
