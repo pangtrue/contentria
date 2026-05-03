@@ -44,6 +44,7 @@ import {
 } from '@mdxeditor/editor';
 import { ForwardRefEditor } from '@/components/dashboard/ForwardRefEditor';
 import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
+import CustomImageDialog from '@/components/dashboard/editor/CustomImageDialog';
 import { createNewPostAction, updatePostAction } from '@/actions/post';
 import { uploadImageToR2 } from '@/lib/uploadImage';
 import { PostDetailResponse, PostStatus } from '@/types/api/posts';
@@ -279,6 +280,7 @@ function helloWorld() {
               imageUploadHandler: async (image: File) => {
                 return await uploadImageToR2(image);
               },
+              ImageDialog: CustomImageDialog,
             }),
             markdownShortcutPlugin(),
             // the default code block language to insert when user clicks the "insert code block" button
