@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkDirective from 'remark-directive';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeShiftHeading from 'rehype-shift-heading';
@@ -18,6 +19,8 @@ import GithubSlugger from 'github-slugger';
 import { toString } from 'mdast-util-to-string';
 import AnalyticsTracker from '@/components/analytics/AnalyticsTracker';
 import { Separator } from '@/components/ui/separator';
+import { remarkAdmonitions } from '@/lib/markdown/remarkAdmonitions';
+import Admonition, { isAdmonitionType } from '@/components/blog/Admonition';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,7 +106,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
 
           <article className="prose prose-indigo max-w-none lg:prose-lg prose-headings:scroll-mt-24">
             <Markdown
-              remarkPlugins={[remarkGfm]}
+              remarkPlugins={[remarkGfm, remarkDirective, remarkAdmonitions]}
               rehypePlugins={[
                 rehypeSlug,
                 [rehypeAutolinkHeadings, { behavior: 'wrap' }],
@@ -125,6 +128,18 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
                     <code {...rest} className={className}>
                       {children}
                     </code>
+                  );
+                },
+                div(props) {
+                  const { className, children, node: _node, ...rest } = props;
+                  const match = className?.match(/admonition-(\w+)/);
+                  if (match && isAdmonitionType(match[1])) {
+                    return <Admonition type={match[1]}>{children}</Admonition>;
+                  }
+                  return (
+                    <div className={className} {...rest}>
+                      {children}
+                    </div>
                   );
                 },
               }}
