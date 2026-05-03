@@ -23,12 +23,16 @@ export default function Footer() {
           <div className="flex items-center space-x-4 sm:space-x-6">
             <Link
               href="/policy?tab=privacy"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-gray-500 transition-colors hover:text-indigo-600"
             >
               개인정보처리방침
             </Link>
             <Link
               href="/policy?tab=terms"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-gray-500 transition-colors hover:text-indigo-600"
             >
               서비스 이용약관
