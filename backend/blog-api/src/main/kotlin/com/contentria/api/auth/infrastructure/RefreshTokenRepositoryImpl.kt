@@ -30,6 +30,10 @@ class RefreshTokenRepositoryImpl(
         return jpaRepository.findByToken(token)
     }
 
+    override fun findByTokenForUpdate(token: String): RefreshToken? {
+        return jpaRepository.findByTokenForUpdate(token)
+    }
+
     override fun findByUserId(userId: UUID): RefreshToken? {
         return jpaRepository.findByUserId(userId)
     }

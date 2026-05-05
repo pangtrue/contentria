@@ -11,6 +11,8 @@ interface RefreshTokenRepository {
 
     fun findByToken(token: String): RefreshToken?
 
+    fun findByTokenForUpdate(token: String): RefreshToken?
+
     fun findByUserId(userId: UUID): RefreshToken?
 
     fun deleteByToken(token: String): Int
