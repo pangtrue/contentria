@@ -3,6 +3,8 @@ package com.contentria.api.auth.application
 import com.contentria.api.auth.application.dto.*
 import com.contentria.api.user.application.UserService
 import com.contentria.api.user.application.dto.UserInfo
+import com.contentria.common.global.error.ContentriaException
+import com.contentria.common.global.error.ErrorCode
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -105,14 +107,22 @@ class AuthFacade(
 
     @Transactional
     fun refreshTokens(oldRefreshTokenValue: String): RefreshedTokensInfo {
-        val validRefreshToken = refreshTokenService.findValidToken(oldRefreshTokenValue)
-        val user = userService.getActiveUserInfo(validRefreshToken.userId)
+        val rotated = refreshTokenService.rotate(oldRefreshTokenValue)
+            ?: refreshTokenService.lookupGrace(oldRefreshTokenValue)
+            ?: throw ContentriaException(ErrorCode.REFRESH_TOKEN_NOT_FOUND)
 
-        val (accessToken, refreshToken) = generateTokens(user)
+        val user = userService.getActiveUserInfo(rotated.userId)
+        val accessToken = tokenProvider.generateAccessToken(
+            AuthTokenCommand(
+                userId = user.userId,
+                email = user.email,
+                roles = user.roles
+            )
+        )
 
         return RefreshedTokensInfo(
             accessToken = accessToken,
-            refreshToken = refreshToken
+            refreshToken = rotated.newToken
         )
     }
 
