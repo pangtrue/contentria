@@ -1,7 +1,9 @@
 package com.contentria.api.auth.application
 
+import com.contentria.api.auth.application.dto.RotatedTokenInfo
 import com.contentria.api.auth.domain.RefreshToken
 import com.contentria.api.auth.domain.RefreshTokenRepository
+import com.contentria.api.auth.infrastructure.RefreshTokenGraceCache
 import com.contentria.common.global.error.ContentriaException
 import com.contentria.common.global.error.ErrorCode
 import com.contentria.api.global.properties.AppProperties
@@ -16,7 +18,8 @@ private val log = KotlinLogging.logger {}
 @Service
 class RefreshTokenService(
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val appProperties: AppProperties
+    private val appProperties: AppProperties,
+    private val graceCache: RefreshTokenGraceCache
 ) {
 
     @Transactional
@@ -35,10 +38,23 @@ class RefreshTokenService(
         return tokenValue
     }
 
+    /**
+     * Atomically rotates a refresh token under a row-level exclusive lock.
+     *
+     * Concurrent callers with the same `oldToken` are serialized by the DB lock; only one
+     * actually performs the rotation. The cache write happens inside the same transaction —
+     * the lock is still held — so a follow-up caller that reads the cache after the lock
+     * is released is guaranteed to see the rotated value. Using `@TransactionalEventListener`
+     * (AFTER_COMMIT) would leave a window between commit (lock release) and listener execution
+     * where a concurrent caller could miss both the row and the cache.
+     *
+     * @return rotated token info, or null if no row matched (caller should fall back to the
+     *         grace cache via [lookupGrace]).
+     */
     @Transactional
-    fun findValidToken(token: String): RefreshToken {
-        val refreshToken = refreshTokenRepository.findByToken(token)
-            ?: throw ContentriaException(ErrorCode.REFRESH_TOKEN_NOT_FOUND)
+    fun rotate(oldToken: String): RotatedTokenInfo? {
+        val refreshToken = refreshTokenRepository.findByTokenForUpdate(oldToken)
+            ?: return null
 
         if (refreshToken.expiryDate.isBefore(Instant.now())) {
             refreshTokenRepository.delete(refreshToken)
@@ -46,7 +62,19 @@ class RefreshTokenService(
             throw ContentriaException(ErrorCode.REFRESH_TOKEN_EXPIRED)
         }
 
-        return refreshToken
+        val newValue = UUID.randomUUID().toString()
+        val newExpiry = Instant.now().plus(appProperties.auth.jwt.refreshTokenExpiration)
+        refreshToken.token = newValue
+        refreshToken.expiryDate = newExpiry
+        // dirty checking flushes UPDATE at commit
+
+        val rotated = RotatedTokenInfo(newToken = newValue, userId = refreshToken.userId)
+        graceCache.put(oldToken, rotated)
+        return rotated
+    }
+
+    fun lookupGrace(oldToken: String): RotatedTokenInfo? {
+        return graceCache.get(oldToken)
     }
 
     @Transactional
