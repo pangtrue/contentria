@@ -114,6 +114,16 @@ bucket4j:
               unit: days
               refill-speed: interval
 
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health # 보안을 위해 health만 노출
+
 app:
   auth:
     jwt:

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-frontend-config
+  labels:
+    app: blog-frontend
+data:
+  # ----------------------------------------------------
+  # 외부 노출용 공개 환경변수 (빌드 타임 주입 권장)
+  # ----------------------------------------------------
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: "339313876009-k4csh005somk8059gecvl4l2eu057hss.apps.googleusercontent.com"
+  NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY: "6LdfOawrAAAAAEt7MDy5aFYKWQoFlK_XgRWzgxz1"
+  NEXT_PUBLIC_RECAPTCHA_V2_CHECKBOX_SITE_KEY: "6LfqOawrAAAAAPfRduHFSGReBuwGmANSv0H6hU6S"
+
+  # 라우팅 URL
+  NEXT_PUBLIC_EXTERNAL_API_BASE_URL: "https://www.contentria.com/api"
+  NEXT_PUBLIC_GOOGLE_REDIRECT_URI: "https://www.contentria.com/api/auth/google/callback"
+
+  # CDN Base URL
+  NEXT_PUBLIC_CDN_BASE_URL: "https://images.contentria.com"
+
+  # ----------------------------------------------------
+  # 서버 전용 환경변수 (브라우저 노출 안됨, NEXT_PUBLIC 제거)
+  # ----------------------------------------------------
+  INTERNAL_API_BASE_URL: "http://blog-api-service.default.svc.cluster.local:8080"
+
+  # Cookie Security (프로덕션 필수)
+  COOKIE_SECURE: "true"

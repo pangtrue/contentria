@@ -20,74 +20,31 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
-          env:
-          # ----------------------------------------------------
-          # CORS Allowed Origins
-          # ----------------------------------------------------
-          - name: APP_CORS_ALLOWED_ORIGINS
-            value: "https://www.contentria.com,https://contentria.com"
-          - name: APP_AUTH_OIDC_SUCCESS_REDIRECT_URL
-            value: "https://www.contentria.com/login/callback"
-          # ----------------------------------------------------
-          # 1. 일반 환경변수
-          # ----------------------------------------------------
-          # Database
-          - name: DATABASE_URL
-            value: "jdbc:postgresql://postgresql.databases.svc.cluster.local:5432/postgres?currentSchema=contentria"
 
-          # Mailgun
-          - name: MAILGUN_HOST
-            value: "smtp.mailgun.org"
-          - name: MAILGUN_PORT
-            value: "587"
-          - name: MAILGUN_DOMAIN
-            value: "contentria.com"
+          # ConfigMap과 Secret을 통째로 환경변수로 주입
+          envFrom:
+            - configMapRef:
+                name: blog-api-config
+            - secretRef:
+                name: blog-api-secret
 
-          # ----------------------------------------------------
-          # 2. Secret 참조 환경변수
-          # ----------------------------------------------------
-          - name: DATABASE_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: db-username
-          - name: DATABASE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: db-password
-          - name: SPRING_OAUTH_GOOGLE_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: oauth-google-client-id
-          - name: SPRING_OAUTH_GOOGLE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: oauth-google-client-secret
-          - name: GOOGLE_RECAPTCHA_V2_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: google-recaptcha-secret-v2
-          - name: GOOGLE_RECAPTCHA_V3_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: google-recaptcha-secret-v3
-          - name: JWT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: jwt-secret
-          - name: MAILGUN_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: mailgun-username
-          - name: MAILGUN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: blog-api-secret
-                key: mailgun-password
+          # 리소스 및 프로브 설정
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
