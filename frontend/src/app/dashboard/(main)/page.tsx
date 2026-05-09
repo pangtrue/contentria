@@ -1,6 +1,6 @@
 import DashboardContent from '@/components/dashboard/DashboardContent';
 import CreateBlogWelcome from '@/components/dashboard/CreateBlogWelcome';
-import { getUserProfileAction } from '@/actions/user';
+import { getRawUserProfileAction } from '@/actions/user';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import {
   getDashboardStatsAction,
@@ -10,8 +10,8 @@ import {
 import { getMyBlogAction } from '@/actions/blog';
 
 export default async function DashboardPage() {
-  const user = await getUserProfileAction();
-  const blogInfos = user ? await getMyBlogAction() : null;
+  const user = await getRawUserProfileAction();
+  const blogInfos = await getMyBlogAction();
 
   if (!blogInfos || blogInfos.length === 0) {
     return <CreateBlogWelcome />;

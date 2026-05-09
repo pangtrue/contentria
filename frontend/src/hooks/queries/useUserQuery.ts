@@ -2,13 +2,15 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { userKeys } from './keys';
-import { getUserProfileAction } from '@/actions/user';
+import { getRawUserProfileAction } from '@/actions/user';
 
 export const useUserProfile = () => {
   return useQuery({
     queryKey: userKeys.profile(),
-    queryFn: () => getUserProfileAction(false),
+    queryFn: () => getRawUserProfileAction(false),
     staleTime: 5 * 60 * 1000, // 5분간 캐시 유지
     retry: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };

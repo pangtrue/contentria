@@ -3,8 +3,9 @@ import localFont from 'next/font/local';
 import './globals.css';
 import ReactQueryProvider from '@/components/ReactQueryProvider';
 import { getUserProfileAction } from '@/actions/user';
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { userKeys } from '@/hooks/queries/keys';
+import { getQueryClient } from '@/lib/getQueryClient';
 
 const pretendard = localFont({
   src: '../../public/fonts/PretendardVariable.woff2',
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const queryClient = new QueryClient();
+  const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
     queryKey: userKeys.profile(),
     queryFn: () => getUserProfileAction(false),
