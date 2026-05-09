@@ -5,23 +5,22 @@ import { ApiError } from '@/types/api/errors';
 import { User } from '@/types/api/user';
 import { revalidatePath } from 'next/cache';
 import { UpdateUserProfileRequest, updateUserProfileRequestSchema } from './schemas';
+import { cache } from 'react';
 
-export async function getRawUserProfileAction(shouldRedirectOn401: boolean = true): Promise<User> {
+export const getRawUserProfileAction = cache(async (shouldRedirectOn401: boolean = true) => {
   return await apiServer.get<User>('/api/users/me', { requireAuth: true, shouldRedirectOn401 });
-}
+});
 
-export async function getUserProfileAction(
-  shouldRedirectOn401: boolean = true
-): Promise<User | null> {
+export const getUserProfileAction = cache(async (shouldRedirectOn401: boolean = true) => {
   try {
-    return getRawUserProfileAction(shouldRedirectOn401);
+    return await getRawUserProfileAction(shouldRedirectOn401);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401 && !shouldRedirectOn401) {
       return null;
     }
     throw error;
   }
-}
+});
 
 export async function updateUserProfileAction(formData: unknown): Promise<User> {
   const validationResult = updateUserProfileRequestSchema.safeParse(formData);

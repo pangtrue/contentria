@@ -52,15 +52,19 @@ async function fetchExtended<T>(url: string, options: FetchOptions = {}): Promis
 
   if (!response.ok) {
     const errorData: Partial<ApiErrorResponse> = await response.json().catch(() => ({}));
-    console.log(`❌ [apiServer] API error response (Status: ${response.status}):`, errorData);
+    const isExpectedAuthCheck = response.status === 401 && !shouldRedirectOn401;
+    if (!isExpectedAuthCheck) {
+      console.log(`❌ [apiServer] API error response (Status: ${response.status}):`, errorData);
+    }
+
     throw ApiError.from(errorData, response.status);
   }
 
-  if (response.status === 204) {
+  const text = await response.text();
+  if (!text) {
     return undefined as T;
   }
-
-  return response.json();
+  return JSON.parse(text);
 }
 
 export default apiServer;

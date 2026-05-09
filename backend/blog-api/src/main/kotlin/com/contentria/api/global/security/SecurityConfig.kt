@@ -94,7 +94,14 @@ class SecurityConfig(
 
     private fun customAuthenticationEntryPoint(): AuthenticationEntryPoint {
         return AuthenticationEntryPoint { request, response, authException ->
-            log.warn { "Authentication required for ${request.requestURI}: ${authException.message}" }
+            val uri = request.requestURI
+
+            if (uri.startsWith("/api/users/me")) {
+                log.debug { "Authentication required for $uri: ${authException.message}" }
+            } else {
+                log.warn { "Unauthorized access attempt to $uri: ${authException.message}" }
+            }
+
             sendErrorResponse(response, ErrorCode.AUTHENTICATION_REQUIRED, request.requestURI)
         }
     }
