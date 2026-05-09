@@ -1,13 +1,14 @@
 import DashboardContent from '@/components/dashboard/DashboardContent';
 import CreateBlogWelcome from '@/components/dashboard/CreateBlogWelcome';
 import { getRawUserProfileAction } from '@/actions/user';
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import {
   getDashboardStatsAction,
   getPopularPostsAction,
   getTrafficDataAction,
 } from '@/actions/dashboard';
 import { getMyBlogAction } from '@/actions/blog';
+import { getQueryClient } from '@/lib/getQueryClient';
 
 export default async function DashboardPage() {
   const user = await getRawUserProfileAction();
@@ -18,7 +19,7 @@ export default async function DashboardPage() {
   }
 
   const slug = blogInfos[0].slug;
-  const queryClient = new QueryClient();
+  const queryClient = getQueryClient();
 
   await Promise.all([
     queryClient.prefetchQuery({
