@@ -1,12 +1,8 @@
-import { getUserProfileAction } from '@/actions/user';
+import { getRawUserProfileAction } from '@/actions/user';
 import ProfileForm from '@/components/dashboard/settings/ProfileForm';
 
 export default async function SettingsPage() {
-  const user = await getUserProfileAction();
-
-  if (!user) {
-    return <div>사용자 정보를 가져올 수 없습니다.</div>;
-  }
+  const user = await getRawUserProfileAction();
 
   return (
     <div className="space-y-6">

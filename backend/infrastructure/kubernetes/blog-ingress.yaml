@@ -6,6 +6,8 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    # apex(contentria.com) 접속 시 www.contentria.com으로 리다이렉트
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:
@@ -14,13 +16,9 @@ spec:
         - contentria.com
       secretName: contentria-tls-secret
   rules:
-    - host: blog.contentria.com
+    - host: www.contentria.com
       http:
         paths:
-          # -----------------------------------------------------------
-          # 1. 백엔드 라우팅 (/api 경로)
-          # -----------------------------------------------------------
-          # 구글 로그인 콜백 등 외부에서 백엔드를 직접 호출해야 할 때 사용됩니다.
           - path: /api
             pathType: Prefix
             backend:
@@ -28,10 +26,16 @@ spec:
                 name: blog-api-service
                 port:
                   number: 8080
-
-          # -----------------------------------------------------------
-          # 2. 프론트엔드 라우팅 (그 외 모든 경로)
-          # -----------------------------------------------------------
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: blog-frontend-service
+                port:
+                  number: 80
+    - host: contentria.com
+      http:
+        paths:
           - path: /
             pathType: Prefix
             backend:

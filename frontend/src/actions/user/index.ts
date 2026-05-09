@@ -6,11 +6,15 @@ import { User } from '@/types/api/user';
 import { revalidatePath } from 'next/cache';
 import { UpdateUserProfileRequest, updateUserProfileRequestSchema } from './schemas';
 
+export async function getRawUserProfileAction(shouldRedirectOn401: boolean = true): Promise<User> {
+  return await apiServer.get<User>('/api/users/me', { requireAuth: true, shouldRedirectOn401 });
+}
+
 export async function getUserProfileAction(
   shouldRedirectOn401: boolean = true
 ): Promise<User | null> {
   try {
-    return await apiServer.get<User>('/api/users/me', { requireAuth: true, shouldRedirectOn401 });
+    return getRawUserProfileAction(shouldRedirectOn401);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401 && !shouldRedirectOn401) {
       return null;
