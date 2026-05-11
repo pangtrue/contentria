@@ -135,7 +135,7 @@ class AuthFacade(
         )
 
         val accessToken = tokenProvider.generateAccessToken(authTokenCommand)
-        val refreshToken = refreshTokenService.upsertRefreshToken(userInfo.userId)
+        val refreshToken = refreshTokenService.createRefreshToken(userInfo.userId)
         return Pair(accessToken, refreshToken)
     }
 }

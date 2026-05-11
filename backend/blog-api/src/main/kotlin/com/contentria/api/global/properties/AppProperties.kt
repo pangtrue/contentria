@@ -3,6 +3,7 @@ package com.contentria.api.global.properties
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated
@@ -22,7 +23,13 @@ data class AuthProperties(
     @field:Valid val cookie: CookieProperties,
     @field:Valid val oidc: OidcProperties,
     @field:Valid val verificationCode: VerificationCodeProperties,
-    @field:Valid val recaptcha: RecaptchaProperties
+    @field:Valid val recaptcha: RecaptchaProperties,
+    @field:Valid val refreshToken: RefreshTokenProperties = RefreshTokenProperties()
+)
+
+@Validated
+data class RefreshTokenProperties(
+    @field:Min(1) val maxPerUser: Int = 5
 )
 
 @Validated
