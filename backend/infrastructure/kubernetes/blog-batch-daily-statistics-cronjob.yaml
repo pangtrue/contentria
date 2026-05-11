@@ -7,7 +7,6 @@ metadata:
     app: blog-batch
     job-type: daily-statistics
 spec:
-  # 매일 KST 01:00 — 어제(KST)의 PV/UV 집계
   schedule: "0 1 * * *"
   timeZone: "Asia/Seoul"
 
@@ -20,10 +19,8 @@ spec:
 
   # 노드 다운 등으로 스케줄을 놓쳤을 때, 10분 안이면 따라잡아 실행
   startingDeadlineSeconds: 600
-
   jobTemplate:
     spec:
-      # Pod 단위 실패 시 최대 2번까지 재시도 (멱등성 확보된 상태이므로 안전)
       backoffLimit: 2
 
       # 1시간 안에 못 끝나면 강제 종료 — 평상시 실행시간의 2~3배 권장
@@ -50,26 +47,11 @@ spec:
               args:
                 - "--spring.batch.job.name=dailyStatisticsJob"
 
-              env:
-                - name: TZ
-                  value: "Asia/Seoul"
-                - name: SPRING_PROFILES_ACTIVE
-                  value: "prod"
-                - name: DATABASE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: blog-batch-secret
-                      key: db-url
-                - name: DATABASE_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: blog-batch-secret
-                      key: db-username
-                - name: DATABASE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: blog-batch-secret
-                      key: db-password
+              envFrom:
+                - configMapRef:
+                    name: blog-batch-config
+                - secretRef:
+                    name: blog-batch-secret
 
               resources:
                 requests:

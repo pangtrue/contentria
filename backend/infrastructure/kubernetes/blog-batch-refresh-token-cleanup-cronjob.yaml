@@ -7,7 +7,6 @@ metadata:
     app: blog-batch
     job-type: refresh-token-cleanup
 spec:
-  # 매일 KST 03:00 — 만료된 refresh token 일괄 정리
   schedule: "0 3 * * *"
   timeZone: "Asia/Seoul"
 
@@ -20,10 +19,8 @@ spec:
 
   # 노드 다운 등으로 스케줄을 놓쳤을 때, 10분 안이면 따라잡아 실행
   startingDeadlineSeconds: 600
-
   jobTemplate:
     spec:
-      # 단일 DELETE라 멱등하므로 재시도 안전
       backoffLimit: 2
 
       # 10분 안에 못 끝나면 강제 종료 — 평상시 수 초 내 완료 예상
@@ -49,26 +46,11 @@ spec:
               args:
                 - "--spring.batch.job.name=refreshTokenCleanupJob"
 
-              env:
-                - name: TZ
-                  value: "Asia/Seoul"
-                - name: SPRING_PROFILES_ACTIVE
-                  value: "prod"
-                - name: DATABASE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: blog-batch-secret
-                      key: db-url
-                - name: DATABASE_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: blog-batch-secret
-                      key: db-username
-                - name: DATABASE_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: blog-batch-secret
-                      key: db-password
+              envFrom:
+                - configMapRef:
+                    name: blog-batch-config
+                - secretRef:
+                    name: blog-batch-secret
 
               resources:
                 requests:
