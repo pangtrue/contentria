@@ -8,10 +8,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.batch.core.job.Job
 import org.springframework.batch.core.job.parameters.JobParametersBuilder
-import org.springframework.batch.test.JobLauncherTestUtils
-import org.springframework.batch.test.context.SpringBatchTest
+import org.springframework.batch.core.launch.JobOperator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import java.time.LocalDate
@@ -19,11 +20,13 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
 
+// Uses bare JobOperator (not @SpringBatchTest / JobLauncherTestUtils) because the latter's
+// autowired Job setter fails with multiple Job beans present in the context.
 @Import(TestContainerConfig::class)
-@SpringBatchTest
 @SpringBootTest
 class DailyStatisticsJobTest(
-    @param:Autowired private val jobLauncherTestUtils: JobLauncherTestUtils,
+    @param:Autowired private val jobOperator: JobOperator,
+    @param:Autowired @param:Qualifier("dailyStatisticsJob") private val dailyStatisticsJob: Job,
     @param:Autowired private val visitLogRepository: VisitLogRepository,
     @param:Autowired private val dailyStatisticsRepository: DailyStatisticsRepository
 ) {
@@ -55,7 +58,7 @@ class DailyStatisticsJobTest(
             .toJobParameters()
 
         // When
-        val jobExecution = jobLauncherTestUtils.launchJob(jobParameters)
+        val jobExecution = jobOperator.start(dailyStatisticsJob, jobParameters)
 
         // Then
         assertThat(jobExecution.exitStatus.exitCode).isEqualTo("COMPLETED")

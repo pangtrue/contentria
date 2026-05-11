@@ -13,7 +13,11 @@ interface RefreshTokenRepository {
 
     fun findByTokenForUpdate(token: String): RefreshToken?
 
-    fun findByUserId(userId: UUID): RefreshToken?
-
     fun deleteByToken(token: String): Int
+
+    /**
+     * Deletes the oldest refresh tokens for [userId], keeping the [keep] most recent rows.
+     * Returns the number of rows actually deleted.
+     */
+    fun pruneOldest(userId: UUID, keep: Int): Int
 }

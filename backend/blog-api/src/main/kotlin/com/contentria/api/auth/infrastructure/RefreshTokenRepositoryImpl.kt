@@ -34,11 +34,11 @@ class RefreshTokenRepositoryImpl(
         return jpaRepository.findByTokenForUpdate(token)
     }
 
-    override fun findByUserId(userId: UUID): RefreshToken? {
-        return jpaRepository.findByUserId(userId)
-    }
-
     override fun deleteByToken(token: String): Int {
         return jpaRepository.deleteByToken(token)
+    }
+
+    override fun pruneOldest(userId: UUID, keep: Int): Int {
+        return jpaRepository.pruneOldest(userId, keep)
     }
 }

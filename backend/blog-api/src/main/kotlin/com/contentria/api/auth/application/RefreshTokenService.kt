@@ -22,19 +22,27 @@ class RefreshTokenService(
     private val graceCache: RefreshTokenGraceCache
 ) {
 
+    /**
+     * Issues a new refresh token for [userId]. Each call inserts a fresh row, so a user can
+     * hold concurrent sessions across devices. To prevent unbounded accumulation, rows beyond
+     * `app.auth.refresh-token.max-per-user` (oldest by created_at) are pruned in the same
+     * transaction.
+     */
     @Transactional
-    fun upsertRefreshToken(userId: UUID): String {
+    fun createRefreshToken(userId: UUID): String {
         val expiryDate = Instant.now().plus(appProperties.auth.jwt.refreshTokenExpiration)
         val tokenValue = UUID.randomUUID().toString()
 
-        val refreshToken = refreshTokenRepository.findByUserId(userId)
-            ?.apply {
-                this.token = tokenValue
-                this.expiryDate = expiryDate
-            }
-            ?: RefreshToken(userId = userId, token = tokenValue, expiryDate = expiryDate)
+        refreshTokenRepository.save(
+            RefreshToken(userId = userId, token = tokenValue, expiryDate = expiryDate)
+        )
 
-        refreshTokenRepository.save(refreshToken)
+        val maxPerUser = appProperties.auth.refreshToken.maxPerUser
+        val pruned = refreshTokenRepository.pruneOldest(userId, maxPerUser)
+        if (pruned > 0) {
+            log.info { "Pruned $pruned oldest refresh token(s) for userId=$userId (cap=$maxPerUser)" }
+        }
+
         return tokenValue
     }
 

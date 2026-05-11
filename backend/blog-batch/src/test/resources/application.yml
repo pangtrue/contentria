@@ -13,10 +13,11 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
-
-app:
-  batch:
-    job-name: dailyStatisticsJob
+    job:
+      # Tests trigger jobs manually via JobOperator. With multiple Job beans on the classpath,
+      # JobLauncherApplicationRunner would otherwise fail context startup demanding
+      # spring.batch.job.name.
+      enabled: false
 
 logging:
   level:
