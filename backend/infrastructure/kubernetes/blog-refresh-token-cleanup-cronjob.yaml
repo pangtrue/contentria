@@ -1,0 +1,96 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: blog-refresh-token-cleanup
+  namespace: default
+  labels:
+    app: blog-batch
+    job-type: refresh-token-cleanup
+spec:
+  # 매일 KST 03:00 — 만료된 refresh token 일괄 정리
+  schedule: "0 3 * * *"
+  timeZone: "Asia/Seoul"
+
+  # 동시성 제어: 이전 실행이 안 끝났으면 새 실행을 막음
+  concurrencyPolicy: Forbid
+
+  # 히스토리 보관: 최근 성공 7개, 실패 3개 Job 객체 유지
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+
+  # 노드 다운 등으로 스케줄을 놓쳤을 때, 10분 안이면 따라잡아 실행
+  startingDeadlineSeconds: 600
+
+  jobTemplate:
+    spec:
+      # 단일 DELETE라 멱등하므로 재시도 안전
+      backoffLimit: 2
+
+      # 10분 안에 못 끝나면 강제 종료 — 평상시 수 초 내 완료 예상
+      activeDeadlineSeconds: 600
+
+      # 완료된 Job/Pod를 1시간 뒤 자동 정리
+      ttlSecondsAfterFinished: 3600
+
+      template:
+        metadata:
+          labels:
+            app: blog-batch
+            job-type: refresh-token-cleanup
+        spec:
+          restartPolicy: Never
+
+          containers:
+            - name: blog-batch
+              image: contentria/blog-batch:1.0.0
+              imagePullPolicy: IfNotPresent
+
+              # 실행할 Job 이름만 지정
+              args:
+                - "--spring.batch.job.name=refreshTokenCleanupJob"
+
+              env:
+                - name: TZ
+                  value: "Asia/Seoul"
+                - name: SPRING_PROFILES_ACTIVE
+                  value: "prod"
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: blog-batch-secret
+                      key: db-url
+                - name: DATABASE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: blog-batch-secret
+                      key: db-username
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: blog-batch-secret
+                      key: db-password
+
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
+
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+
+          volumes:
+            - name: tmp
+              emptyDir: {}

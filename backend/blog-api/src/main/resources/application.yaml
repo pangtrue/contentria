@@ -130,6 +130,8 @@ app:
       secret: ${JWT_SECRET}
       access-token-expiration: 15m   # 15 minutes
       refresh-token-expiration: 7d   # 7 days
+    refresh-token:
+      max-per-user: 5
     cookie:
       access-token-name: "accessToken"
       refresh-token-name: "refreshToken"
