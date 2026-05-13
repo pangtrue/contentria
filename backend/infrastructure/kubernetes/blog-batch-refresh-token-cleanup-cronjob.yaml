@@ -39,7 +39,7 @@ spec:
 
           containers:
             - name: blog-batch
-              image: contentria/blog-batch:1.0.0
+              image: contentria/blog-batch:1.1
               imagePullPolicy: IfNotPresent
 
               # 실행할 Job 이름만 지정

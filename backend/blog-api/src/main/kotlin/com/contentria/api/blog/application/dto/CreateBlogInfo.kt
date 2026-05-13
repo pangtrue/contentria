@@ -13,7 +13,7 @@ data class CreateBlogInfo(
     companion object {
         fun from(blogInfo: BlogInfo): CreateBlogInfo {
             return CreateBlogInfo(
-                id = blogInfo.blogId!!,
+                id = blogInfo.blogId,
                 slug = blogInfo.slug,
                 title = blogInfo.title,
                 description = blogInfo.description,

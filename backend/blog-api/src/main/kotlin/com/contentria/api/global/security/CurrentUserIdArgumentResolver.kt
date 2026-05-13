@@ -36,7 +36,6 @@ class CurrentUserIdArgumentResolver : HandlerMethodArgumentResolver {
         val principal = authentication.principal
         if (principal is CustomUserDetails) {
             return principal.userId
-                ?: throw ContentriaException(ErrorCode.UNEXPECTED_AUTHENTICATION_PRINCIPAL)
         }
 
         throw ContentriaException(ErrorCode.UNEXPECTED_AUTHENTICATION_PRINCIPAL)

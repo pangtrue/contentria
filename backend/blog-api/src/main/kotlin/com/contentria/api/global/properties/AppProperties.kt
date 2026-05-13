@@ -6,25 +6,26 @@ import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.NestedConfigurationProperty
 import org.springframework.validation.annotation.Validated
 import java.time.Duration
 
 @ConfigurationProperties(prefix = "app")
 @Validated
 data class AppProperties(
-    @field:Valid val auth: AuthProperties,
-    @field:Valid val cors: CorsProperties,
-    @field:Valid val r2: R2Properties,
+    @NestedConfigurationProperty @field:Valid val auth: AuthProperties,
+    @NestedConfigurationProperty @field:Valid val cors: CorsProperties,
+    @NestedConfigurationProperty @field:Valid val r2: R2Properties,
 )
 
 @Validated
 data class AuthProperties(
-    @field:Valid val jwt: JwtProperties,
-    @field:Valid val cookie: CookieProperties,
-    @field:Valid val oidc: OidcProperties,
-    @field:Valid val verificationCode: VerificationCodeProperties,
-    @field:Valid val recaptcha: RecaptchaProperties,
-    @field:Valid val refreshToken: RefreshTokenProperties = RefreshTokenProperties()
+    @NestedConfigurationProperty @field:Valid val jwt: JwtProperties,
+    @NestedConfigurationProperty @field:Valid val cookie: CookieProperties,
+    @NestedConfigurationProperty @field:Valid val oidc: OidcProperties,
+    @NestedConfigurationProperty @field:Valid val verificationCode: VerificationCodeProperties,
+    @NestedConfigurationProperty @field:Valid val recaptcha: RecaptchaProperties,
+    @NestedConfigurationProperty @field:Valid val refreshToken: RefreshTokenProperties = RefreshTokenProperties()
 )
 
 @Validated
