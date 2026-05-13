@@ -15,7 +15,7 @@ data class AuthUserDetails(
         SimpleGrantedAuthority(it)
     }.toSet()
 
-    override fun getAuthorities(): Collection<out GrantedAuthority> = authorities
+    override fun getAuthorities(): Collection<GrantedAuthority> = authorities
 
     /**
      * In JWT authentication, a password is not required, so we return null.

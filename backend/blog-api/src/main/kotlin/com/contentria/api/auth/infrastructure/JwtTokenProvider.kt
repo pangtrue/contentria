@@ -31,13 +31,13 @@ class JwtTokenProvider(
         }
     }
 
-    override fun generateAccessToken(authToken: AuthTokenCommand): String {
+    override fun generateAccessToken(command: AuthTokenCommand): String {
         val expiration = Instant.now().plus(appProperties.auth.jwt.accessTokenExpiration)
         val extraClaims = mapOf(
-            "userId" to authToken.userId,
-            "roles" to authToken.roles
+            "userId" to command.userId,
+            "roles" to command.roles
         )
-        return generateToken(authToken.email, extraClaims, Date.from(expiration))
+        return generateToken(command.email, extraClaims, Date.from(expiration))
     }
 
     private fun generateToken(subject: String, extraClaims: Map<String, Any>, expiration: Date): String {

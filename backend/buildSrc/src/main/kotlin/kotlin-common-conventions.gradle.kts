@@ -9,7 +9,7 @@ plugins {
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 group = "com.contentria"
-version = "0.0.1-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -35,5 +35,11 @@ tasks.named<Test>("test") {
 
     testLogging {
         events("passed")
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    compilerOptions {
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }

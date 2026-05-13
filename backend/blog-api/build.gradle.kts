@@ -1,5 +1,6 @@
 plugins {
     id("kotlin-common-conventions")
+    kotlin("kapt")
 }
 
 dependencies {
@@ -17,6 +18,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-jackson")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // Security & JWT
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -27,9 +29,6 @@ dependencies {
 
     // OAuth2 클라이언트
     implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
-
-    // HTTP 클라이언트
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     // Kotlin 관련
     implementation("org.jetbrains.kotlin:kotlin-reflect")
