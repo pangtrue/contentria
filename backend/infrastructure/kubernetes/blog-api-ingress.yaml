@@ -1,19 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: blog-ingress
+  name: blog-api-ingress
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    # contentria.com 접속 시 www.contentria.com으로 리다이렉트 (301)
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # No sticky session: the API is stateless and protects refresh-token
+    # rotation with a row-level pessimistic lock + grace cache, so requests
+    # should be load-balanced round-robin across pods.
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
         - www.contentria.com
-        - contentria.com # 브라우저 인증서 경고 방지를 위해 tls에는 유지
       secretName: contentria-tls-secret
   rules:
     - host: www.contentria.com
@@ -26,10 +25,3 @@ spec:
                 name: blog-api-service
                 port:
                   number: 8080
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: blog-frontend-service
-                port:
-                  number: 80

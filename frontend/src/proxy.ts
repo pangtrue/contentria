@@ -4,6 +4,39 @@ import { PATHS } from './constants/paths';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
 
+type RefreshedTokens = { accessToken: string; refreshToken: string };
+
+// Coalesces concurrent refresh attempts for the same refresh token into a single
+// backend call. Scope is the Node.js process (one entry per pod). Cross-pod
+// dedup relies on ingress sticky sessions; the backend's pessimistic lock +
+// grace cache is the ultimate safety net.
+const inflightRefresh = new Map<string, Promise<RefreshedTokens>>();
+
+async function fetchRefreshedTokens(refreshToken: string): Promise<RefreshedTokens> {
+  const existing = inflightRefresh.get(refreshToken);
+  if (existing) return existing;
+
+  const promise = (async (): Promise<RefreshedTokens> => {
+    const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `refreshToken=${refreshToken}`,
+      },
+    });
+
+    if (!refreshResponse.ok) {
+      throw new Error('Refresh token invalid or expired');
+    }
+    return (await refreshResponse.json()) as RefreshedTokens;
+  })().finally(() => {
+    inflightRefresh.delete(refreshToken);
+  });
+
+  inflightRefresh.set(refreshToken, promise);
+  return promise;
+}
+
 export default async function proxy(request: NextRequest) {
   console.log('[Proxy] executed for path:', request.nextUrl.pathname);
 
@@ -61,22 +94,10 @@ async function tryRefreshTokens(request: NextRequest, refreshToken: string): Pro
   console.log('[Proxy] accessToken expired. Attempting refresh.');
 
   try {
-    const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: `refreshToken=${refreshToken}`,
-      },
-    });
-
-    if (!refreshResponse.ok) {
-      throw new Error('Refresh token invalid or expired');
-    }
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+      await fetchRefreshedTokens(refreshToken);
 
     console.log('[Proxy] Refresh successful. Reloading...');
-    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-      await refreshResponse.json();
-
     const response = NextResponse.redirect(request.url);
     setAuthCookies(response, newAccessToken, newRefreshToken);
     return response;
