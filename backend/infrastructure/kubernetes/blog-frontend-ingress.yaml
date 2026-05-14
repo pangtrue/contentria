@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blog-frontend-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    # Redirect contentria.com to www.contentria.com (301).
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # Sticky sessions route the same client back to the same frontend pod, so
+    # the in-process single-flight refresh map in frontend/src/proxy.ts can
+    # coalesce concurrent refresh attempts from one user's parallel server
+    # actions. The backend's pessimistic lock + grace cache remains the
+    # cross-pod safety net.
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "blog-frontend-route"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "3600"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - www.contentria.com
+        - contentria.com # Keep in TLS list to avoid browser cert warning on the non-www host before the redirect fires.
+      secretName: contentria-tls-secret
+  rules:
+    - host: www.contentria.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: blog-frontend-service
+                port:
+                  number: 80
