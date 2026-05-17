@@ -85,6 +85,8 @@ bucket4j:
     - id: rateLimitingFilter
       cache-name: rateLimiting
       url: "/api/auth/.*"
+      http-status-code: TOO_MANY_REQUESTS
+      http-response-body: '{"status":429,"code":"C0008","error":"Too Many Requests","message":"Too many requests. Please try again later."}'
       rate-limits:
         - cache-key: "@ipResolver.getClientIp(#root)"
           post-execute-condition: getStatus() eq 200
@@ -104,6 +106,7 @@ bucket4j:
       filter-order: 90
       rate-limits:
         - cache-key: "@userIdResolver.getUserId(#root)"
+          numTokens: 1 # The number of tokens that should be consumed
           bandwidths:
             - capacity: 30
               time: 1

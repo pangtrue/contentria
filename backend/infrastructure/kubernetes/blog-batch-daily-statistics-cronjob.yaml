@@ -25,10 +25,6 @@ spec:
 
       # 1시간 안에 못 끝나면 강제 종료 — 평상시 실행시간의 2~3배 권장
       activeDeadlineSeconds: 3600
-
-      # 완료된 Job/Pod를 1시간 뒤 자동 정리 (로그는 K8s 로그 수집기로 미리 빠져나가 있어야 함)
-      ttlSecondsAfterFinished: 3600
-
       template:
         metadata:
           labels:
