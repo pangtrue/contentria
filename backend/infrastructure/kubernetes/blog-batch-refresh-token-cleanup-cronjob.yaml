@@ -25,10 +25,6 @@ spec:
 
       # 10분 안에 못 끝나면 강제 종료 — 평상시 수 초 내 완료 예상
       activeDeadlineSeconds: 600
-
-      # 완료된 Job/Pod를 1시간 뒤 자동 정리
-      ttlSecondsAfterFinished: 3600
-
       template:
         metadata:
           labels:
