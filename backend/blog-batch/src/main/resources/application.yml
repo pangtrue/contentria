@@ -18,7 +18,7 @@ spring:
     jdbc:
       initialize-schema: never # The production database is managed using migration tools like Flyway.
     job:
-      enabled: true # Prevent all jobs from starting automatically on startup.
+      enabled: false # Prevent all jobs from starting automatically on startup.
 
 common:
   mail:

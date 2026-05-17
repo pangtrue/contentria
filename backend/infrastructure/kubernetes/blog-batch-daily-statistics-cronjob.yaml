@@ -41,6 +41,7 @@ spec:
               # Spring Boot CLI 인자: 실행할 Job 이름만 지정
               # targetDate는 Step 코드에서 어제(KST)로 디폴트되므로 평상시엔 생략
               args:
+                - "--spring.batch.job.enabled=true"
                 - "--spring.batch.job.name=dailyStatisticsJob"
 
               envFrom:
@@ -57,11 +58,9 @@ spec:
                   memory: "1Gi"
                   cpu: "1000m"
 
-              # 보안 권장: 가능한 권한 최소화
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
-                runAsNonRoot: true
                 capabilities:
                   drop: ["ALL"]
                 seccompProfile:

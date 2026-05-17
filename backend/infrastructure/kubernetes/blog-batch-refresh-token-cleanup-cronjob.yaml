@@ -40,6 +40,7 @@ spec:
 
               # 실행할 Job 이름만 지정
               args:
+                - "--spring.batch.job.enabled=true"
                 - "--spring.batch.job.name=refreshTokenCleanupJob"
 
               envFrom:
@@ -59,7 +60,6 @@ spec:
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
-                runAsNonRoot: true
                 capabilities:
                   drop: ["ALL"]
                 seccompProfile:
