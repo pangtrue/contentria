@@ -177,6 +177,49 @@ CREATE TABLE media (
 CREATE INDEX idx_media_post_id ON media(post_id);
 CREATE INDEX idx_media_uploader_id ON media(uploader_id);
 
+-- Videos are kept separate from `media`: a video has multi-file HLS output, an async
+-- transcoding lifecycle (status), and extra metadata. This table also doubles as the
+-- transcoding work queue (polled with FOR UPDATE SKIP LOCKED by blog-worker).
+CREATE TABLE videos (
+    id UUID PRIMARY KEY,
+    post_id UUID, -- nullable: pre-publish / orphan allowed
+    uploader_id UUID NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING, PROCESSING, COMPLETED, FAILED, DELETED
+
+    -- source (raw)
+    original_name VARCHAR(255) NOT NULL,
+    raw_key VARCHAR(500) NOT NULL, -- raw/{id}/original.<ext>
+    file_size BIGINT,
+    content_type VARCHAR(100),
+
+    -- transcoded outputs (filled on COMPLETED)
+    hls_prefix VARCHAR(500), -- hls/{id}/
+    master_key VARCHAR(500), -- hls/{id}/master.m3u8
+    poster_key VARCHAR(500),
+    duration_ms BIGINT,
+    width INT, -- source resolution (no-upscale check)
+    height INT,
+
+    -- queue / retry (this table IS the work queue, polled via SKIP LOCKED)
+    attempt INT NOT NULL DEFAULT 0,
+    locked_at TIMESTAMP WITH TIME ZONE, -- visibility timeout for crash recovery
+    error_message TEXT,
+
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    -- Post deletion orphans the video (cleaned up by GC), mirroring media.
+    CONSTRAINT fk_videos_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE SET NULL,
+    -- User deletion removes their videos.
+    CONSTRAINT fk_videos_uploader FOREIGN KEY (uploader_id) REFERENCES users(id) ON DELETE CASCADE,
+    -- Webhook idempotency: at-least-once delivery cannot double-insert.
+    CONSTRAINT uq_videos_raw_key UNIQUE (raw_key)
+);
+
+CREATE INDEX idx_videos_post_id ON videos(post_id);
+-- Partial index for the worker poll (WHERE status = 'PENDING').
+CREATE INDEX idx_videos_pending ON videos(created_at) WHERE status = 'PENDING';
+
 CREATE TABLE visit_logs (
     id UUID PRIMARY KEY,
     blog_id UUID NOT NULL,
