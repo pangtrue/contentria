@@ -40,6 +40,7 @@ COPY buildSrc /app/buildSrc/
 COPY blog-common/build.gradle.kts blog-common/
 COPY blog-api/build.gradle.kts blog-api/
 COPY blog-batch/build.gradle.kts blog-batch/
+COPY blog-worker/build.gradle.kts blog-worker/
 
 # =============================================================================
 # 1.3. Download Gradle Dependencies
