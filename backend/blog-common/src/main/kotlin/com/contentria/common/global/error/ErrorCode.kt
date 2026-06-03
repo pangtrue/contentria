@@ -67,6 +67,8 @@ enum class ErrorCode(
     // Video
     VIDEO_UNSUPPORTED_TYPE(HttpStatus.BAD_REQUEST, "VI0000", "Unsupported video type. Allowed: MP4, MOV, WebM, MKV."),
     VIDEO_FILE_TOO_LARGE(HttpStatus.BAD_REQUEST, "VI0001", "Video size exceeds the maximum allowed limit."),
+    NOT_FOUND_VIDEO(HttpStatus.NOT_FOUND, "VI0002", "Video not found."),
+    VIDEO_LINK_FORBIDDEN(HttpStatus.FORBIDDEN, "VI0003", "You do not have permission to attach this video."),
 
     // Markdown
     MARKDOWN_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "MD0000", "An error occurred while processing the markdown content."),

@@ -11,6 +11,7 @@ import com.contentria.api.post.application.dto.UpdatePostCommand
 import com.contentria.api.post.application.dto.UpdatePostInfo
 import com.contentria.api.post.domain.PostStatus
 import com.contentria.api.user.application.UserService
+import com.contentria.api.video.application.VideoService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -28,7 +29,8 @@ class PostFacade(
     private val categoryService: CategoryService,
     private val userService: UserService,
     private val markdownService: MarkdownService,
-    private val mediaService: MediaService
+    private val mediaService: MediaService,
+    private val videoService: VideoService
 ) {
     @Transactional(readOnly = true)
     fun getPostDetail(blogSlug: String, postSlug: String): PostDetailInfo {
@@ -46,7 +48,8 @@ class PostFacade(
             blogId = blogInfo.blogId,
             blogSlug = blogInfo.slug,
             categoryId = categoryInfo?.id,
-            categoryName = categoryInfo?.name
+            categoryName = categoryInfo?.name,
+            video = videoService.getActiveVideoByPostId(post.id)
         )
     }
 
@@ -66,7 +69,8 @@ class PostFacade(
             blogId = blogInfo.blogId,
             blogSlug = blogInfo.slug,
             categoryId = categoryInfo?.id,
-            categoryName = categoryInfo?.name
+            categoryName = categoryInfo?.name,
+            video = videoService.getActiveVideoByPostId(post.id)
         )
     }
 
@@ -110,6 +114,8 @@ class PostFacade(
 
         mediaService.syncMediaForPost(savedPost.id!!, finalMarkdown)
 
+        videoService.syncPostVideo(savedPost.id!!, command.videoId, userId)
+
         log.info { "Post created: postId=${savedPost.id}, blogId=${command.blogId}, userId=$userId" }
         return CreateNewPostInfo.from(savedPost)
     }
@@ -135,6 +141,8 @@ class PostFacade(
         )
 
         mediaService.syncMediaForPost(command.postId, finalMarkdown)
+
+        videoService.syncPostVideo(command.postId, command.videoId, userId)
 
         log.info { "Post updated: postId=${updatedPost.id}, blogId=${command.blogId}, userId=$userId" }
         return UpdatePostInfo.from(updatedPost)

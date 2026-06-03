@@ -65,4 +65,14 @@ class Video(
     fun linkToPost(postId: UUID) {
         this.postId = postId
     }
+
+    /**
+     * Marks the video for cleanup (GC reclaims its R2 objects + row). The post link is
+     * detached so the `uq_videos_post_active` partial index stays free regardless of the
+     * flush order when a video is replaced.
+     */
+    fun markDeleted() {
+        this.postId = null
+        this.status = VideoStatus.DELETED
+    }
 }
