@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: blog-video-gc
+  namespace: default
+  labels:
+    app: blog-batch
+    job-type: video-gc
+spec:
+  schedule: "0 * * * *"
+  timeZone: "Asia/Seoul"
+
+  # 동시성 제어: 이전 실행이 안 끝났으면 새 실행을 막음
+  concurrencyPolicy: Forbid
+
+  # 히스토리 보관: 최근 성공 7개, 실패 3개 Job 객체 유지
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+
+  # 노드 다운 등으로 스케줄을 놓쳤을 때, 10분 안이면 따라잡아 실행
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+
+      # 10분 안에 못 끝나면 강제 종료 — 평상시 수 초 내 완료 예상
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: blog-batch
+            job-type: video-gc
+        spec:
+          restartPolicy: Never
+
+          containers:
+            - name: blog-batch
+              image: contentria/blog-batch:1.1
+              imagePullPolicy: IfNotPresent
+
+              # 실행할 Job 이름만 지정
+              args:
+                - "--spring.batch.job.enabled=true"
+                - "--spring.batch.job.name=videoGcJob"
+
+              envFrom:
+                - configMapRef:
+                    name: blog-batch-config
+                - secretRef:
+                    name: blog-batch-secret
+
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
+
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+
+          volumes:
+            - name: tmp
+              emptyDir: {}
