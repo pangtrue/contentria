@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-worker-deployment
+  labels:
+    app: blog-worker
+spec:
+  # 처리량 = 레플리카 수 (pod당 동시 작업 1). 백로그 시 수동 증설; SKIP-LOCK 아닌
+  # Cloudflare Queue 리스 방식이라 N개 풀 컨슈머가 코드 변경 없이 동작.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog-worker
+  template:
+    metadata:
+      labels:
+        app: blog-worker
+    spec:
+      containers:
+        - name: blog-worker
+          image: contentria/blog-worker:1.0
+          imagePullPolicy: Never
+
+          # ConfigMap과 Secret을 통째로 환경변수로 주입
+          envFrom:
+            - configMapRef:
+                name: blog-worker-config
+            - secretRef:
+                name: blog-worker-secret
+
+          # 리소스 설정 (FFmpeg는 CPU 바운드; 인코딩 시 최대 2코어로 burst)
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+
+          # 트랜스코딩 스크래치 (원본 다운로드 + HLS 출력). 작업 후 정리됨.
+          volumeMounts:
+            - name: transcode-scratch
+              mountPath: /tmp/transcode
+
+      # HTTP를 서빙하지 않는 워커라 Service/Ingress 및 httpGet 프로브 없음.
+      # JVM이 죽으면 컨테이너가 재시작되어 liveness를 대체.
+      volumes:
+        - name: transcode-scratch
+          emptyDir:
+            sizeLimit: 3Gi

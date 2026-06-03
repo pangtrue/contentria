@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-worker-config
+  labels:
+    app: blog-worker
+data:
+  # ----------------------------------------------------
+  # 애플리케이션 동작 환경
+  # ----------------------------------------------------
+  TZ: "Asia/Seoul"
+  SPRING_PROFILES_ACTIVE: "prod"
+
+  # ----------------------------------------------------
+  # 인프라 연결 정보
+  # ----------------------------------------------------
+  DATABASE_URL: "jdbc:postgresql://postgresql.databases.svc.cluster.local:5432/postgres?currentSchema=contentria"
+
+  # ----------------------------------------------------
+  # Cloudflare Queue (식별자 — 비밀 아님. 토큰만 Secret)
+  # ----------------------------------------------------
+  CLOUDFLARE_ACCOUNT_ID: "your-cloudflare-account-id"
+  CLOUDFLARE_QUEUE_ID: "your-cloudflare-queue-id"
