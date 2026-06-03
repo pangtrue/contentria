@@ -2,6 +2,7 @@ package com.contentria.worker
 
 import com.contentria.worker.queue.CloudflareQueueClient
 import com.contentria.worker.queue.QueueMessage
+import com.contentria.worker.storage.WorkerStorageClient
 import com.contentria.worker.transcode.PermanentTranscodeException
 import com.contentria.worker.transcode.TranscodeJob
 import com.contentria.worker.transcode.Transcoder
@@ -9,6 +10,7 @@ import com.contentria.worker.video.VideoJobRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 private val log = KotlinLogging.logger {}
 
@@ -25,6 +27,7 @@ class VideoTranscodeWorker(
     private val queueClient: CloudflareQueueClient,
     private val videoJobRepository: VideoJobRepository,
     private val transcoder: Transcoder,
+    private val storageClient: WorkerStorageClient,
 ) {
 
     @Scheduled(fixedDelayString = "\${worker.poll.fixed-delay-ms:5000}")
@@ -72,6 +75,10 @@ class VideoTranscodeWorker(
             val result = transcoder.transcode(TranscodeJob(job.id, message.objectKey))
             videoJobRepository.markCompleted(job.id, result)
             log.info { "Video ${job.id} marked COMPLETED" }
+            // After COMPLETED the raw source is no longer needed. Best-effort delete —
+            // the raw/ Lifecycle backstop covers any miss. Done after markCompleted so a
+            // redelivery (status COMPLETED) is acked+skipped without needing the raw.
+            deleteRawQuietly(message.objectKey, job.id)
         } catch (e: PermanentTranscodeException) {
             // Bad input — retrying won't help. Mark FAILED (reader shows "처리 실패") and ack.
             log.warn { "Permanent transcode failure for video ${job.id}: ${e.message}" }
@@ -79,6 +86,14 @@ class VideoTranscodeWorker(
         }
         // Transient failures propagate to poll() → left unacked → redelivery → DLQ.
         return true
+    }
+
+    private fun deleteRawQuietly(rawKey: String, videoId: UUID) {
+        try {
+            storageClient.delete(rawKey)
+        } catch (e: Exception) {
+            log.warn(e) { "Failed to delete raw source for video $videoId (key=$rawKey); Lifecycle backstop will handle it" }
+        }
     }
 
     companion object {
