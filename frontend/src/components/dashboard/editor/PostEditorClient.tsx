@@ -45,6 +45,7 @@ import {
 import { ForwardRefEditor } from '@/components/dashboard/ForwardRefEditor';
 import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
 import CustomImageDialog from '@/components/dashboard/editor/CustomImageDialog';
+import VideoUpload from '@/components/dashboard/editor/VideoUpload';
 import { createNewPostAction, updatePostAction } from '@/actions/post';
 import { uploadImageToR2 } from '@/lib/uploadImage';
 import { PostDetailResponse, PostStatus } from '@/types/api/posts';
@@ -80,6 +81,7 @@ export function PostEditorClient({ blogId, categories, initialData }: PostEditor
   const [selectedCategory, setSelectedCategory] = useState<string | ''>(
     initialData?.categoryId || ''
   );
+  const [videoId, setVideoId] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   console.log('initialData', initialData);
@@ -184,6 +186,7 @@ function helloWorld() {
           categoryId: selectedCategory,
           contentMarkdown: markdownContent,
           status: postStatus,
+          videoId,
         };
 
         if (initialData) {
@@ -217,7 +220,7 @@ function helloWorld() {
       // editorRef.current?.setMarkdown('새로운 마크다운 내용');
       // console.log(editorRef.current?.getMarkdown());
     },
-    [title, selectedCategory, blogId, router, initialData]
+    [title, selectedCategory, blogId, router, initialData, videoId]
   );
 
   const handleExit = () => {
@@ -247,6 +250,8 @@ function helloWorld() {
           ))}
         </select>
       </div>
+
+      <VideoUpload value={videoId} onChange={setVideoId} />
 
       <div className="mb-4">
         <input

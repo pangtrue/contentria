@@ -46,6 +46,7 @@ export interface CreateNewPostRequest {
   contentMarkdown: string;
   status: PostStatus;
   categoryId: string;
+  videoId?: string | null;
 }
 
 export interface CreateNewPostResponse {
@@ -66,6 +67,7 @@ export interface UpdatePostRequest {
   contentMarkdown: string;
   status: PostStatus;
   categoryId: string;
+  videoId?: string | null;
 }
 
 export interface UpdatePostResponse {
