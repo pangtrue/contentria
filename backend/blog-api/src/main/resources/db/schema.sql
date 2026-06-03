@@ -178,8 +178,9 @@ CREATE INDEX idx_media_post_id ON media(post_id);
 CREATE INDEX idx_media_uploader_id ON media(uploader_id);
 
 -- Videos are kept separate from `media`: a video has multi-file HLS output, an async
--- transcoding lifecycle (status), and extra metadata. This table also doubles as the
--- transcoding work queue (polled with FOR UPDATE SKIP LOCKED by blog-worker).
+-- transcoding lifecycle (status), and extra metadata. The transcoding work queue is
+-- Cloudflare Queue (pulled by blog-worker), so this table only tracks the asset
+-- lifecycle, not queue state.
 CREATE TABLE videos (
     id UUID PRIMARY KEY,
     post_id UUID, -- nullable: pre-publish / orphan allowed
@@ -200,10 +201,7 @@ CREATE TABLE videos (
     width INT, -- source resolution (no-upscale check)
     height INT,
 
-    -- queue / retry (this table IS the work queue, polled via SKIP LOCKED)
-    attempt INT NOT NULL DEFAULT 0,
-    locked_at TIMESTAMP WITH TIME ZONE, -- visibility timeout for crash recovery
-    error_message TEXT,
+    error_message TEXT, -- failure reason for FAILED (reader display)
 
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -212,13 +210,15 @@ CREATE TABLE videos (
     CONSTRAINT fk_videos_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE SET NULL,
     -- User deletion removes their videos.
     CONSTRAINT fk_videos_uploader FOREIGN KEY (uploader_id) REFERENCES users(id) ON DELETE CASCADE,
-    -- Webhook idempotency: at-least-once delivery cannot double-insert.
+    -- raw_key is allocated per videoId (raw/{id}/...), so it is unique by construction.
     CONSTRAINT uq_videos_raw_key UNIQUE (raw_key)
 );
 
 CREATE INDEX idx_videos_post_id ON videos(post_id);
--- Partial index for the worker poll (WHERE status = 'PENDING').
-CREATE INDEX idx_videos_pending ON videos(created_at) WHERE status = 'PENDING';
+-- Enforce one active video per post (product rule), as defense-in-depth on top of the
+-- application. Partial so it excludes unattached uploads (post_id NULL) and DELETED rows
+-- that linger during re-upload (immutable replace + soft delete) until GC.
+CREATE UNIQUE INDEX uq_videos_post_active ON videos(post_id) WHERE post_id IS NOT NULL AND status <> 'DELETED';
 
 CREATE TABLE visit_logs (
     id UUID PRIMARY KEY,

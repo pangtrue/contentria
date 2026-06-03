@@ -3,7 +3,6 @@ package com.contentria.api.video.domain
 import com.contentria.common.domain.model.BaseEntity
 import com.contentria.common.global.config.jpa.GeneratedUuidV7
 import jakarta.persistence.*
-import java.time.ZonedDateTime
 import java.util.*
 
 @Entity
@@ -54,11 +53,6 @@ class Video(
     var width: Int? = null,
 
     var height: Int? = null,
-
-    @Column(nullable = false)
-    var attempt: Int = 0,
-
-    var lockedAt: ZonedDateTime? = null,
 
     @Column(columnDefinition = "TEXT")
     var errorMessage: String? = null,
