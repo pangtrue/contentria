@@ -55,6 +55,7 @@ spring:
     cache-names:
       - rateLimiting
       - mediaRateLimiting
+      - videoRateLimiting
       - verificationCode
     caffeine:
       spec: maximumSize=1000,expireAfterAccess=300s
@@ -113,6 +114,25 @@ bucket4j:
               unit: minutes
               refill-speed: interval
             - capacity: 100
+              time: 1
+              unit: days
+              refill-speed: interval
+    - id: videoRateLimitingFilter
+      cache-name: videoRateLimiting
+      url: "/api/videos/presigned-url"
+      http-content-type: "application/json;charset=UTF-8"
+      http-status-code: TOO_MANY_REQUESTS
+      http-response-body: '{"status":429,"code":"C0008","error":"Too Many Requests","message":"Too many requests. Please try again later."}'
+      filter-order: 91
+      rate-limits:
+        - cache-key: "@userIdResolver.getUserId(#root)"
+          numTokens: 1 # The number of tokens that should be consumed
+          bandwidths:
+            - capacity: 10
+              time: 1
+              unit: minutes
+              refill-speed: interval
+            - capacity: 30
               time: 1
               unit: days
               refill-speed: interval
@@ -175,6 +195,13 @@ app:
       - data
     add-rel-nofollow: true
     max-content-length: 1000000 # 1MB
+  video:
+    max-file-size-bytes: 524288000 # 500MB (single PUT cap; multipart deferred)
+    allowed-content-types:
+      - video/mp4
+      - video/quicktime
+      - video/webm
+      - video/x-matroska
 
 common:
   mail:
