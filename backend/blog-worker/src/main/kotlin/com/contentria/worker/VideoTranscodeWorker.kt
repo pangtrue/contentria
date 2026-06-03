@@ -1,0 +1,82 @@
+package com.contentria.worker
+
+import com.contentria.worker.queue.CloudflareQueueClient
+import com.contentria.worker.queue.QueueMessage
+import com.contentria.worker.transcode.TranscodeJob
+import com.contentria.worker.transcode.Transcoder
+import com.contentria.worker.video.VideoJobRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
+
+private val log = KotlinLogging.logger {}
+
+/**
+ * Polls the Cloudflare Queue and drives each message through the transcode lifecycle.
+ *
+ * Ack semantics:
+ *  - success or permanently-handled (no row, already terminal, irrelevant action) → ack.
+ *  - transient failure (exception) → do NOT ack; the queue redelivers after the
+ *    visibility timeout, and after max retries the message lands in the DLQ.
+ */
+@Component
+class VideoTranscodeWorker(
+    private val queueClient: CloudflareQueueClient,
+    private val videoJobRepository: VideoJobRepository,
+    private val transcoder: Transcoder,
+) {
+
+    @Scheduled(fixedDelayString = "\${worker.poll.fixed-delay-ms:5000}")
+    fun poll() {
+        val messages = try {
+            queueClient.pull()
+        } catch (e: Exception) {
+            log.error(e) { "Queue pull failed; will retry next tick" }
+            return
+        }
+
+        for (message in messages) {
+            try {
+                if (handle(message)) {
+                    queueClient.ack(listOf(message.leaseId))
+                }
+            } catch (e: Exception) {
+                log.error(e) {
+                    "Transient failure for leaseId=${message.leaseId}, key=${message.objectKey}; " +
+                        "leaving unacked for redelivery"
+                }
+            }
+        }
+    }
+
+    /** @return true if the message should be acked (handled), false to leave for redelivery. */
+    private fun handle(message: QueueMessage): Boolean {
+        if (message.action != ACTION_PUT_OBJECT && message.action != ACTION_COMPLETE_MULTIPART) {
+            log.debug { "Ignoring action=${message.action} key=${message.objectKey}" }
+            return true
+        }
+
+        val job = videoJobRepository.findByRawKey(message.objectKey)
+        if (job == null) {
+            log.warn { "No videos row for key=${message.objectKey}; acking" }
+            return true
+        }
+        if (job.status == STATUS_COMPLETED || job.status == STATUS_DELETED) {
+            log.info { "Video ${job.id} already ${job.status}; acking (idempotent)" }
+            return true
+        }
+
+        videoJobRepository.markProcessing(job.id)
+        val result = transcoder.transcode(TranscodeJob(job.id, message.objectKey))
+        videoJobRepository.markCompleted(job.id, result)
+        log.info { "Video ${job.id} marked COMPLETED" }
+        return true
+    }
+
+    companion object {
+        private const val ACTION_PUT_OBJECT = "PutObject"
+        private const val ACTION_COMPLETE_MULTIPART = "CompleteMultipartUpload"
+        private const val STATUS_COMPLETED = "COMPLETED"
+        private const val STATUS_DELETED = "DELETED"
+    }
+}
