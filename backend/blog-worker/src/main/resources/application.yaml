@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: blog-worker
+  datasource:
+    url: ${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+logging:
+  level:
+    root: INFO
+    com.contentria.worker: INFO
+
+cloudflare:
+  queue:
+    account-id: ${CLOUDFLARE_ACCOUNT_ID}
+    queue-id: ${CF_QUEUE_ID}
+    api-token: ${CF_API_TOKEN}
+    batch-size: 1
+    visibility-timeout-ms: 1800000 # 30 min; must exceed worst-case transcode
+
+worker:
+  poll:
+    fixed-delay-ms: 5000
