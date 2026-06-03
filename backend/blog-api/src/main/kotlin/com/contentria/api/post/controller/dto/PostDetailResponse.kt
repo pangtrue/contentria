@@ -3,6 +3,7 @@ package com.contentria.api.post.controller.dto
 import com.contentria.api.post.application.dto.PostContentInfo
 import com.contentria.api.post.application.dto.PostDetailInfo
 import com.contentria.api.user.application.dto.UserInfo
+import com.contentria.api.video.application.dto.VideoInfo
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -12,7 +13,8 @@ data class PostDetailResponse(
     val blogId: UUID,
     val blogSlug: String,
     val categoryId: UUID?,
-    val categoryName: String?
+    val categoryName: String?,
+    val video: VideoResponse?
 ) {
     data class PostResponse(
         val id: UUID,
@@ -56,6 +58,30 @@ data class PostDetailResponse(
         }
     }
 
+    data class VideoResponse(
+        val videoId: UUID,
+        val status: String,
+        val masterUrl: String?,
+        val posterUrl: String?,
+        val durationMs: Long?,
+        val width: Int?,
+        val height: Int?
+    ) {
+        companion object {
+            fun from(info: VideoInfo): VideoResponse {
+                return VideoResponse(
+                    videoId = info.videoId,
+                    status = info.status,
+                    masterUrl = info.masterUrl,
+                    posterUrl = info.posterUrl,
+                    durationMs = info.durationMs,
+                    width = info.width,
+                    height = info.height,
+                )
+            }
+        }
+    }
+
     companion object {
         fun from(postDetailInfo: PostDetailInfo): PostDetailResponse {
             return PostDetailResponse(
@@ -64,7 +90,8 @@ data class PostDetailResponse(
                 blogId = postDetailInfo.blogId,
                 blogSlug = postDetailInfo.blogSlug,
                 categoryId = postDetailInfo.categoryId,
-                categoryName = postDetailInfo.categoryName
+                categoryName = postDetailInfo.categoryName,
+                video = postDetailInfo.video?.let { VideoResponse.from(it) }
             )
         }
     }

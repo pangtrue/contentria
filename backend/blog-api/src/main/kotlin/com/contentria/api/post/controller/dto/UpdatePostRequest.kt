@@ -16,7 +16,8 @@ data class UpdatePostRequest(
     val contentMarkdown: String,
 
     val status: PostStatus,
-    val categoryId: UUID
+    val categoryId: UUID,
+    val videoId: UUID? = null
 ) {
         fun toCommand(): UpdatePostCommand {
             return UpdatePostCommand(
@@ -25,7 +26,8 @@ data class UpdatePostRequest(
                 title = this.title,
                 contentMarkdown = this.contentMarkdown,
                 status = this.status,
-                categoryId = this.categoryId
+                categoryId = this.categoryId,
+                videoId = this.videoId
             )
         }
 }

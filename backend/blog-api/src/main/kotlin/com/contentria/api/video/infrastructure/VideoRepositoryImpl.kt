@@ -2,6 +2,7 @@ package com.contentria.api.video.infrastructure
 
 import com.contentria.api.video.domain.Video
 import com.contentria.api.video.domain.VideoRepository
+import com.contentria.api.video.domain.VideoStatus
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -15,8 +16,8 @@ class VideoRepositoryImpl(
         return videoJpaRepository.findByIdOrNull(id)
     }
 
-    override fun findByPostId(postId: UUID): Video? {
-        return videoJpaRepository.findByPostId(postId)
+    override fun findActiveByPostId(postId: UUID): Video? {
+        return videoJpaRepository.findByPostIdAndStatusNot(postId, VideoStatus.DELETED)
     }
 
     override fun findByRawKey(rawKey: String): Video? {

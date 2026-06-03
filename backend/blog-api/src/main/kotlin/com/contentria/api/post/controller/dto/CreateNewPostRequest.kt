@@ -15,7 +15,8 @@ data class CreateNewPostRequest(
     val contentMarkdown: String,
 
     val status: PostStatus,
-    val categoryId: UUID
+    val categoryId: UUID,
+    val videoId: UUID? = null
 ) {
     fun toCommand(): CreateNewPostCommand {
         return CreateNewPostCommand(
@@ -23,7 +24,8 @@ data class CreateNewPostRequest(
             title = this.title,
             contentMarkdown = this.contentMarkdown,
             status = this.status,
-            categoryId = this.categoryId
+            categoryId = this.categoryId,
+            videoId = this.videoId
         )
     }
 }
