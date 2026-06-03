@@ -9,5 +9,6 @@ data class UpdatePostCommand(
     val title: String,
     val contentMarkdown: String,
     val status: PostStatus,
-    val categoryId: UUID
+    val categoryId: UUID,
+    val videoId: UUID? = null
 )

@@ -1,4 +1,5 @@
 import { AuthorResponse } from './user';
+import { VideoStatus } from './video';
 
 export interface PostSummary {
   id: string;
@@ -29,6 +30,16 @@ export interface PostDetail {
   publishedAt: string;
 }
 
+export interface PostVideo {
+  videoId: string;
+  status: VideoStatus;
+  masterUrl: string | null;
+  posterUrl: string | null;
+  durationMs: number | null;
+  width: number | null;
+  height: number | null;
+}
+
 export interface PostDetailResponse {
   post: PostDetail;
   author: AuthorResponse;
@@ -36,6 +47,7 @@ export interface PostDetailResponse {
   blogSlug: string;
   categoryId: string | null;
   categoryName: string | null;
+  video: PostVideo | null;
 }
 
 export type PostStatus = 'DRAFT' | 'PUBLISHED';

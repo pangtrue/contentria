@@ -1,6 +1,7 @@
 package com.contentria.api.video.application
 
 import com.contentria.api.global.properties.AppProperties
+import com.contentria.api.video.application.dto.VideoInfo
 import com.contentria.api.video.application.dto.VideoPresignedUrlCommand
 import com.contentria.api.video.application.dto.VideoPresignedUrlInfo
 import com.contentria.api.video.domain.Video
@@ -56,6 +57,49 @@ class VideoService(
         return VideoPresignedUrlInfo(
             presignedUrl = presignedUrl,
             videoId = savedVideo.id!!
+        )
+    }
+
+    /**
+     * Links the chosen video to a post on save (called by PostFacade). One active video per
+     * post: any previously-attached video is marked DELETED (GC reclaims it). `videoId == null`
+     * removes the current video.
+     */
+    @Transactional
+    fun syncPostVideo(postId: UUID, videoId: UUID?, uploaderId: UUID) {
+        val current = videoRepository.findActiveByPostId(postId)
+
+        if (videoId == null) {
+            current?.markDeleted()
+            return
+        }
+        if (current != null && current.id == videoId) {
+            return
+        }
+        current?.markDeleted()
+
+        val video = videoRepository.findById(videoId)
+            ?: throw ContentriaException(ErrorCode.NOT_FOUND_VIDEO)
+        if (!video.isUploader(uploaderId)) {
+            throw ContentriaException(ErrorCode.VIDEO_LINK_FORBIDDEN)
+        }
+        video.linkToPost(postId)
+
+        log.info { "Linked video $videoId to post $postId" }
+    }
+
+    @Transactional(readOnly = true)
+    fun getActiveVideoByPostId(postId: UUID): VideoInfo? {
+        val video = videoRepository.findActiveByPostId(postId) ?: return null
+        val publicUrl = appProperties.r2.publicUrl
+        return VideoInfo(
+            videoId = video.id!!,
+            status = video.status.name,
+            masterUrl = video.masterKey?.let { "$publicUrl/$it" },
+            posterUrl = video.posterKey?.let { "$publicUrl/$it" },
+            durationMs = video.durationMs,
+            width = video.width,
+            height = video.height,
         )
     }
 

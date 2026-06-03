@@ -1,6 +1,7 @@
 package com.contentria.api.post.application.dto
 
 import com.contentria.api.user.application.dto.UserInfo
+import com.contentria.api.video.application.dto.VideoInfo
 import java.util.UUID
 
 data class PostDetailInfo(
@@ -9,7 +10,8 @@ data class PostDetailInfo(
     val blogId: UUID,
     val blogSlug: String,
     val categoryId: UUID?,
-    val categoryName: String?
+    val categoryName: String?,
+    val video: VideoInfo?
 ) {
     companion object {
         fun from(
@@ -18,7 +20,8 @@ data class PostDetailInfo(
             blogId: UUID,
             blogSlug: String,
             categoryId: UUID?,
-            categoryName: String?
+            categoryName: String?,
+            video: VideoInfo?
         ): PostDetailInfo {
             return PostDetailInfo(
                 post = postContentInfo,
@@ -26,7 +29,8 @@ data class PostDetailInfo(
                 blogId = blogId,
                 blogSlug = blogSlug,
                 categoryId = categoryId,
-                categoryName = categoryName
+                categoryName = categoryName,
+                video = video
             )
         }
     }

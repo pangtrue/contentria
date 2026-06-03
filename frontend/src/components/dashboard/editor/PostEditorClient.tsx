@@ -81,7 +81,7 @@ export function PostEditorClient({ blogId, categories, initialData }: PostEditor
   const [selectedCategory, setSelectedCategory] = useState<string | ''>(
     initialData?.categoryId || ''
   );
-  const [videoId, setVideoId] = useState<string | null>(null);
+  const [videoId, setVideoId] = useState<string | null>(initialData?.video?.videoId ?? null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   console.log('initialData', initialData);
