@@ -22,16 +22,11 @@
 
 # =============================================================================
 # 1. BUILD STAGE: Application Compilation and Layered JAR Extraction
-#    This stage uses a full JDK to compile the Spring Boot application
-#    and then extracts its components into layers for optimized Docker caching.
 # =============================================================================
 FROM eclipse-temurin:21-jdk-alpine AS builder
 
 # =============================================================================
 # 1.1. Setup Working Directory and Copy Gradle Wrapper/Configuration Files
-#      These files are copied early to leverage Docker's build cache for
-#      Gradle dependency resolution. Changes here will invalidate cache
-#      for dependency downloading.
 # =============================================================================
 WORKDIR /app
 COPY gradlew settings.gradle.kts /app/
@@ -39,8 +34,7 @@ COPY gradle /app/gradle/
 
 # =============================================================================
 # 1.2. Copy Module Build Scripts
-#      All `build.gradle.kts` files are copied to allow Gradle to understand
-#      the multi-module project structure and resolve inter-module dependencies.
+#      Required for Gradle to resolve inter-module dependencies accurately.
 # =============================================================================
 COPY buildSrc /app/buildSrc/
 COPY blog-common/build.gradle.kts blog-common/
@@ -50,71 +44,79 @@ COPY blog-worker/build.gradle.kts blog-worker/
 
 # =============================================================================
 # 1.3. Download Gradle Dependencies
-#      Execute `dependencies` task to download and cache all required libraries.
-#      `--no-daemon` is used for faster builds in container environments.
-#      `-x test` skips unit tests during this build stage.
+#      Specifically downloads dependencies for the `blog-worker` module.
 # =============================================================================
 RUN chmod +x ./gradlew \
-    && ./gradlew --no-daemon --stacktrace :blog-api:dependencies
+    && ./gradlew --no-daemon --stacktrace :blog-worker:dependencies
 
 # =============================================================================
 # 1.4. Copy Source Code for Relevant Modules
-#      Source code for the `blog-api` and its direct dependencies (like `blog-common`)
-#      is copied. This layer's cache is invalidated upon any source code change.
+#      Copies source code for `blog-worker` and its dependency `blog-common`.
 # =============================================================================
 COPY blog-common/src blog-common/src
-COPY blog-api/src blog-api/src
+COPY blog-worker/src blog-worker/src
 
 # =============================================================================
-# 1.5. Build Spring Boot JAR for blog-api Module
-#      The `bootJar` task is executed for the specific `blog-api` module.
+# 1.5. Build Spring Boot JAR for blog-worker Module
+#      Executes the `bootJar` task specifically for the worker module.
 # =============================================================================
-RUN ./gradlew --no-daemon -x test :blog-api:bootJar
+RUN ./gradlew --no-daemon -x test :blog-worker:bootJar
 
 # =============================================================================
 # 1.6. Extract Spring Boot Layered JAR
-#      This step utilizes Spring Boot's "layertools" to separate the JAR into
-#      distinct layers (dependencies, loader, snapshot-dependencies, application)
-#      which drastically improves Docker image build times and caching.
+#      Separates the built JAR into cacheable layers.
 # =============================================================================
-ARG JAR_FILE=/app/blog-api/build/libs/blog-api-*.jar
-RUN java -Djarmode=layertools -jar ${JAR_FILE} extract --destination blog-api/build/extracted
+ARG JAR_FILE=/app/blog-worker/build/libs/blog-worker-*.jar
+RUN java -Djarmode=layertools -jar ${JAR_FILE} extract --destination blog-worker/build/extracted
 
 # =============================================================================
-# 2. RUN STAGE: Production-Ready Application Execution Environment
-#    This stage creates a minimal image containing only the JRE and the
-#    extracted application layers, optimizing for size and security.
+# 2. RUN STAGE: Production-Ready Worker Execution Environment
 # =============================================================================
 FROM eclipse-temurin:21-jre-alpine AS runner
 
 # =============================================================================
-# 2.1. Setup Working Directory and Create Non-Root User
-#      A non-root user (`spring`) is created for enhanced security, adhering
-#      to the principle of least privilege.
+# 2.1. Install Native Transcoding Tools
+#      The worker invokes ffmpeg/ffprobe as subprocesses (see FfmpegTranscoder).
+#      The apk package provides both binaries.
+# =============================================================================
+RUN apk add --no-cache ffmpeg
+
+# =============================================================================
+# 2.2. Setup Working Directory and Create Non-Root User
 # =============================================================================
 WORKDIR /app
 RUN addgroup --system spring && adduser --system --ingroup spring spring
 
 # =============================================================================
-# 2.2. COPY Layered JAR Contents from Build Stage
-#      Layers are copied in an order that maximizes Docker's cache efficiency,
-#      placing less frequently changing layers (dependencies) first.
+# 2.3. Create Transcoding Scratch Directory
+#      Holds the downloaded source + HLS output during a job. Mount an emptyDir
+#      here in K8s; sized for one job (raw <= 500 MB + outputs).
 # =============================================================================
-COPY --from=builder /app/blog-api/build/extracted/dependencies/ ./
-COPY --from=builder /app/blog-api/build/extracted/spring-boot-loader/ ./
-COPY --from=builder /app/blog-api/build/extracted/snapshot-dependencies/ ./
-COPY --from=builder /app/blog-api/build/extracted/application/ ./
+RUN mkdir -p /tmp/transcode && chown spring:spring /tmp/transcode
 
 # =============================================================================
-# 2.3. Configure Runtime Environment
-#      Switch to the non-root user and expose the application's listening port.
+# 2.4. COPY Layered JAR Contents from Build Stage
+#      Order matters: Least frequently changed layers first.
+# =============================================================================
+COPY --from=builder /app/blog-worker/build/extracted/dependencies/ ./
+COPY --from=builder /app/blog-worker/build/extracted/spring-boot-loader/ ./
+COPY --from=builder /app/blog-worker/build/extracted/snapshot-dependencies/ ./
+COPY --from=builder /app/blog-worker/build/extracted/application/ ./
+
+# =============================================================================
+# 2.5. Configure Runtime Environment
+#      Switch to non-root user.
+#      Note: EXPOSE is omitted because the worker pulls from Cloudflare Queue and
+#      does not serve HTTP traffic.
 # =============================================================================
 USER spring
-EXPOSE 8080
 
 # =============================================================================
-# 2.4. Define Application Entrypoint and Default Command
-#      Specifies how the Spring Boot application is started within the container.
+# 2.6. Define Application Entrypoint and Default Command
+#      Specifies how the worker starts. It runs continuously, polling the queue.
 # =============================================================================
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", \
+    "-XX:MaxRAMPercentage=75.0", \
+    "-XX:+ExitOnOutOfMemoryError", \
+    "org.springframework.boot.loader.launch.JarLauncher"]
 CMD []
