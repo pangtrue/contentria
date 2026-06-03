@@ -15,8 +15,8 @@ logging:
 cloudflare:
   queue:
     account-id: ${CLOUDFLARE_ACCOUNT_ID}
-    queue-id: ${CF_QUEUE_ID}
-    api-token: ${CF_API_TOKEN}
+    queue-id: ${CLOUDFLARE_QUEUE_ID}
+    api-token: ${CLOUDFLARE_API_TOKEN}
     batch-size: 1
     visibility-timeout-ms: 1800000 # 30 min; must exceed worst-case transcode
 
