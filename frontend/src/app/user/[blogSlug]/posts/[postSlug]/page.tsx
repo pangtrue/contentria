@@ -23,6 +23,7 @@ import AnalyticsTracker from '@/components/analytics/AnalyticsTracker';
 import { Separator } from '@/components/ui/separator';
 import { remarkAdmonitions } from '@/lib/markdown/remarkAdmonitions';
 import Admonition, { isAdmonitionType } from '@/components/blog/Admonition';
+import VideoPlayer from '@/components/blog/VideoPlayer';
 
 export const dynamic = 'force-dynamic';
 
@@ -90,7 +91,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
     notFound();
   }
 
-  const { post, author, blogId } = postDetailResponse;
+  const { post, author, blogId, video } = postDetailResponse;
   const { contentMarkdown } = post;
 
   const headings = await getHeadingsFromMarkdown(contentMarkdown);
@@ -116,6 +117,8 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
           </header>
 
           <Separator className="mb-8 lg:mb-10" />
+
+          {video && <VideoPlayer video={video} />}
 
           <article className="prose prose-indigo max-w-none lg:prose-lg prose-headings:scroll-mt-24">
             <Markdown
