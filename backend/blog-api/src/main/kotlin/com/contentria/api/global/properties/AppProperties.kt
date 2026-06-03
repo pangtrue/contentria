@@ -16,6 +16,7 @@ data class AppProperties(
     @NestedConfigurationProperty @field:Valid val auth: AuthProperties,
     @NestedConfigurationProperty @field:Valid val cors: CorsProperties,
     @NestedConfigurationProperty @field:Valid val r2: R2Properties,
+    @NestedConfigurationProperty @field:Valid val video: VideoProperties = VideoProperties(),
 )
 
 @Validated
@@ -64,6 +65,17 @@ data class VerificationCodeProperties(
 @Validated
 data class CorsProperties(
     val allowedOrigins: List<String>
+)
+
+@Validated
+data class VideoProperties(
+    val maxFileSizeBytes: Long = 500L * 1024 * 1024, // 500MB (single PUT cap; multipart deferred)
+    val allowedContentTypes: Set<String> = setOf(
+        "video/mp4",
+        "video/quicktime",   // .mov
+        "video/webm",
+        "video/x-matroska",  // .mkv
+    ),
 )
 
 @Validated
