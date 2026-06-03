@@ -2,6 +2,7 @@ package com.contentria.worker
 
 import com.contentria.worker.queue.CloudflareQueueClient
 import com.contentria.worker.queue.QueueMessage
+import com.contentria.worker.transcode.PermanentTranscodeException
 import com.contentria.worker.transcode.TranscodeJob
 import com.contentria.worker.transcode.Transcoder
 import com.contentria.worker.video.VideoJobRepository
@@ -67,9 +68,16 @@ class VideoTranscodeWorker(
         }
 
         videoJobRepository.markProcessing(job.id)
-        val result = transcoder.transcode(TranscodeJob(job.id, message.objectKey))
-        videoJobRepository.markCompleted(job.id, result)
-        log.info { "Video ${job.id} marked COMPLETED" }
+        try {
+            val result = transcoder.transcode(TranscodeJob(job.id, message.objectKey))
+            videoJobRepository.markCompleted(job.id, result)
+            log.info { "Video ${job.id} marked COMPLETED" }
+        } catch (e: PermanentTranscodeException) {
+            // Bad input — retrying won't help. Mark FAILED (reader shows "처리 실패") and ack.
+            log.warn { "Permanent transcode failure for video ${job.id}: ${e.message}" }
+            videoJobRepository.markFailed(job.id, e.message ?: "transcode failed")
+        }
+        // Transient failures propagate to poll() → left unacked → redelivery → DLQ.
         return true
     }
 

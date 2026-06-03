@@ -20,6 +20,20 @@ cloudflare:
     batch-size: 1
     visibility-timeout-ms: 1800000 # 30 min; must exceed worst-case transcode
 
+r2:
+  access-key-id: ${R2_ACCESS_KEY_ID}
+  secret-access-key: ${R2_SECRET_ACCESS_KEY}
+  endpoint: ${R2_ENDPOINT}
+  bucket-name: ${R2_BUCKET_NAME}
+
+transcode:
+  ffmpeg-path: ffmpeg
+  ffprobe-path: ffprobe
+  max-duration-seconds: 300 # 5 min
+  hls-segment-seconds: 6
+  process-timeout-minutes: 20
+  work-dir: /tmp/transcode # mount an emptyDir here in K8s
+
 worker:
   poll:
     fixed-delay-ms: 5000

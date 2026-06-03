@@ -1,6 +1,8 @@
 package com.contentria.worker
 
 import com.contentria.worker.config.CloudflareProperties
+import com.contentria.worker.config.R2Properties
+import com.contentria.worker.config.TranscodeProperties
 import org.springframework.boot.WebApplicationType
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -16,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
  * Component scan is scoped to this module so blog-common's web/JPA beans are not pulled in.
  */
 @SpringBootApplication(scanBasePackages = ["com.contentria.worker"])
-@EnableConfigurationProperties(CloudflareProperties::class)
+@EnableConfigurationProperties(CloudflareProperties::class, R2Properties::class, TranscodeProperties::class)
 @EnableScheduling
 class BlogWorkerApplication
 
