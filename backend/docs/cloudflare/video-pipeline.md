@@ -41,16 +41,20 @@ wrangler queues create contentria-video-transcode-dlq
 ### 1.2 HTTP pull consumer
 
 The worker is a **pull** consumer (not a Worker push consumer). Configure the work queue
-with an `http_pull` consumer, `max_retries = 3`, and the DLQ as the dead-letter target.
+with an `http_pull` consumer, message retries = 3, and the DLQ as the dead-letter target.
 
 ```bash
 wrangler queues consumer http add contentria-video-transcode \
-  --max-retries 3 \
+  --message-retries 3 \
+  --visibility-timeout-secs 1800 \
   --dead-letter-queue contentria-video-transcode-dlq
 ```
 
-- **Max retries = 3** → after 3 failed deliveries the message goes to the DLQ.
-- **Visibility timeout** is set per pull request by the worker (see §3), not here.
+- **`--message-retries 3`** → after 3 failed deliveries the message goes to the DLQ.
+  (The flag is `--message-retries`; `--max-retries` does not exist.)
+- **`--visibility-timeout-secs 1800`** sets the consumer-level default (30 min). The
+  worker also sends `visibility_timeout_ms` on every pull (see §3); keeping both at
+  30 min means the design holds even if one of them is omitted.
 
 ### 1.3 R2 event notification
 
