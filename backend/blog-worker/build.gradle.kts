@@ -7,8 +7,9 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    // Jackson 3 (tools.jackson) + its Boot 4 auto-config (provides the JsonMapper/ObjectMapper bean)
+    implementation("org.springframework.boot:spring-boot-starter-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 

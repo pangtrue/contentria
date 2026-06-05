@@ -1,10 +1,10 @@
 package com.contentria.worker.transcode
 
 import com.contentria.worker.config.TranscodeProperties
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 import java.io.File
 import java.time.Duration
+import tools.jackson.databind.ObjectMapper
 
 /** Probes a source file with ffprobe and validates it is a usable video. */
 @Component
