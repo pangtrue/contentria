@@ -86,7 +86,7 @@ class FfmpegTranscoder(
         val command = buildHlsCommand(input, outDir, renditions, hasAudio)
         val result = processRunner.run(command, Duration.ofMinutes(properties.processTimeoutMinutes))
         if (!result.isSuccess) {
-            // After a successful ffprobe, an ffmpeg failure is treated as transient (retry → DLQ).
+            // After a successful ffprobe, a ffmpeg failure is treated as transient (retry → DLQ).
             throw RuntimeException("ffmpeg HLS encode failed (exit ${result.exitCode}): ${result.stderr.takeLast(800)}")
         }
     }
