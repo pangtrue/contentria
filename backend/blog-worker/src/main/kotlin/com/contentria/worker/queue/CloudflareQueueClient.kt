@@ -42,12 +42,12 @@ class CloudflareQueueClient(
 
         val messages = objectMapper.readTree(response).path("result").path("messages")
         return messages.mapNotNull { node ->
-            val leaseId = node.path("lease_id").asText(null) ?: return@mapNotNull null
+            val leaseId = node.path("lease_id").asString(null) ?: return@mapNotNull null
             val event = node.path("body")
             QueueMessage(
                 leaseId = leaseId,
-                objectKey = event.path("object").path("key").asText(""),
-                action = event.path("action").asText(""),
+                objectKey = event.path("object").path("key").asString(""),
+                action = event.path("action").asString(""),
             )
         }
     }
