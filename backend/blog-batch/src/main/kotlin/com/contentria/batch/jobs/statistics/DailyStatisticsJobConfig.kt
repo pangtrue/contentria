@@ -125,8 +125,7 @@ class DailyStatisticsJobConfig(
             INSERT INTO contentria.daily_statistics
                 (id, blog_id, post_id, stat_date, visit_count, view_count, created_at, updated_at)
             VALUES
-                (gen_random_uuid(), :blogId, :postId, :statDate, :visitCount, :viewCount,
-                 CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                (gen_random_uuid(), :blogId, :postId, :statDate, :visitCount, :viewCount, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             ON CONFLICT ON CONSTRAINT uq_daily_stats_blog_post_date DO UPDATE SET
                 visit_count = EXCLUDED.visit_count,
                 view_count = EXCLUDED.view_count,

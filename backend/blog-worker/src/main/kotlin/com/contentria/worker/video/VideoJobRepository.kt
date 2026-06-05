@@ -33,15 +33,15 @@ class VideoJobRepository(
         jdbcTemplate.update(
             """
             UPDATE videos
-               SET status = 'COMPLETED',
-                   hls_prefix = ?,
-                   master_key = ?,
-                   poster_key = ?,
-                   duration_ms = ?,
-                   width = ?,
-                   height = ?,
-                   updated_at = now()
-             WHERE id = ?
+                SET status = 'COMPLETED',
+                    hls_prefix = ?,
+                    master_key = ?,
+                    poster_key = ?,
+                    duration_ms = ?,
+                    width = ?,
+                    height = ?,
+                    updated_at = now()
+            WHERE id = ?
             """.trimIndent(),
             result.hlsPrefix,
             result.masterKey,

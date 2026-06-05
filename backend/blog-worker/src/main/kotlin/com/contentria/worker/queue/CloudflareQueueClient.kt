@@ -1,13 +1,13 @@
 package com.contentria.worker.queue
 
 import com.contentria.worker.config.CloudflareProperties
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import tools.jackson.databind.ObjectMapper
 
 private val log = KotlinLogging.logger {}
 
@@ -42,12 +42,12 @@ class CloudflareQueueClient(
 
         val messages = objectMapper.readTree(response).path("result").path("messages")
         return messages.mapNotNull { node ->
-            val leaseId = node.path("lease_id").asText(null) ?: return@mapNotNull null
+            val leaseId = node.path("lease_id").asString(null) ?: return@mapNotNull null
             val event = node.path("body")
             QueueMessage(
                 leaseId = leaseId,
-                objectKey = event.path("object").path("key").asText(""),
-                action = event.path("action").asText(""),
+                objectKey = event.path("object").path("key").asString(""),
+                action = event.path("action").asString(""),
             )
         }
     }
