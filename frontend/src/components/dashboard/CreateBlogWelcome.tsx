@@ -17,12 +17,14 @@ import {
   InputGroupText,
 } from '@/components/ui/input-group';
 
+// 백엔드 CreateBlogRequest의 @Pattern("^[a-z0-9-]+$")과 동일하게 유지할 것 —
+// 클라이언트가 더 느슨하면 인라인 검증 대신 제출 후 서버 에러로 떨어진다.
 const schema = z.object({
   slug: z
     .string()
     .min(3, '3자 이상 입력해주세요.')
     .max(30, '30자 이하로 입력해주세요.')
-    .regex(/^[a-zA-Z0-9-_]+$/, '영문, 숫자, -, _ 문자만 사용할 수 있습니다.'),
+    .regex(/^[a-z0-9-]+$/, '영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.'),
 });
 
 type FormValues = z.infer<typeof schema>;
