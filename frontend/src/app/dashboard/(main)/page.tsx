@@ -1,5 +1,5 @@
 import DashboardContent from '@/components/dashboard/DashboardContent';
-import CreateBlogWelcome from '@/components/dashboard/CreateBlogWelcome';
+import { redirect } from 'next/navigation';
 import { getRawUserProfileAction } from '@/actions/user';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import {
@@ -13,8 +13,9 @@ import { getQueryClient } from '@/lib/getQueryClient';
 export default async function DashboardPage() {
   const [user, blogInfos] = await Promise.all([getRawUserProfileAction(), getMyBlogAction()]);
 
+  // The (main) layout already redirects blog-less users; this is direct-access defense.
   if (!blogInfos || blogInfos.length === 0) {
-    return <CreateBlogWelcome />;
+    redirect('/dashboard/welcome');
   }
 
   const slug = blogInfos[0].slug;

@@ -33,6 +33,7 @@ export default function CreateBlogWelcome() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -40,11 +41,12 @@ export default function CreateBlogWelcome() {
 
   const router = useRouter();
   const { mutate: createBlog, isPending, error } = useCreateBlogMutation();
+  const slugPreview = watch('slug');
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     createBlog(data, {
       onSuccess: () => {
-        router.refresh();
+        router.replace('/dashboard');
       },
     });
   };
@@ -86,6 +88,13 @@ export default function CreateBlogWelcome() {
                 {errors.slug.message}
               </p>
             )}
+            {/* 모바일에선 addon이 @만 보이므로, 만들어질 전체 주소를 실시간으로 보여준다 */}
+            <p className="mt-2 break-all text-sm text-gray-500">
+              내 블로그 주소:{' '}
+              <span className="font-medium text-primary">
+                https://contentria.com/@{slugPreview || 'your-blog-name'}
+              </span>
+            </p>
           </div>
 
           {error && (

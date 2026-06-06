@@ -1,4 +1,5 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
 
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
@@ -8,7 +9,14 @@ import { getMyBlogAction } from '@/actions/blog';
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const blogInfos = await getMyBlogAction();
   const hasBlogs = blogInfos && blogInfos.length > 0;
-  const firstBlogSlug = hasBlogs ? blogInfos[0].slug : null;
+
+  // Central guard: every (main) route (dashboard/posts/categories/settings) requires a
+  // blog. This also closes side doors like the header profile dropdown → settings.
+  if (!hasBlogs) {
+    redirect('/dashboard/welcome');
+  }
+
+  const firstBlogSlug = blogInfos![0].slug;
 
   return (
     <div className="grid h-screen grid-rows-[auto_1fr_auto] bg-gray-50">
