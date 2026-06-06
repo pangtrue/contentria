@@ -4,12 +4,10 @@ kotlin = "2.3.21"
 junit-jupiter-engine = "5.12.1"
 spring-boot = "4.0.4"
 spring-dependency-management = "1.1.7"
-# NOTE: camelCase keys to avoid type-safe accessor collisions with the
-# existing `kotlin`/`java` version keys (leaf vs subtree, e.g. libs.versions.kotlin).
-kotlinLogging = "7.0.3"
+kotlin-logging = "7.0.3"
 aws-sdk = "2.31.1"
 jjwt = "0.12.6"
-javaJwt = "4.4.0"
+java-jwt = "4.4.0"
 bucket4j = "0.14.0"
 caffeine-jcache = "3.2.2"
 commonmark = "0.27.0"
@@ -18,7 +16,7 @@ slugify = "3.0.7"
 
 [libraries]
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-engine" }
-kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlinLogging" }
+kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 
 # AWS SDK (Cloudflare R2 호환). 개별 모듈(s3)의 버전은 BOM이 관리한다.
 aws-bom = { module = "software.amazon.awssdk:bom", version.ref = "aws-sdk" }
@@ -28,7 +26,7 @@ aws-s3 = { module = "software.amazon.awssdk:s3" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
-java-jwt = { module = "com.auth0:java-jwt", version.ref = "javaJwt" }
+java-jwt = { module = "com.auth0:java-jwt", version.ref = "java-jwt" }
 
 # Rate limiting
 bucket4j-starter = { module = "com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter", version.ref = "bucket4j" }
