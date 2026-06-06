@@ -1,7 +1,6 @@
 [versions]
 java = "21"
 kotlin = "2.3.21"
-junit-jupiter-engine = "5.12.1"
 spring-boot = "4.0.4"
 spring-dependency-management = "1.1.7"
 kotlin-logging = "7.0.3"
@@ -15,7 +14,6 @@ uuid-creator = "6.1.0"
 slugify = "3.0.7"
 
 [libraries]
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-engine" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 
 # AWS SDK (Cloudflare R2 호환). 개별 모듈(s3)의 버전은 BOM이 관리한다.

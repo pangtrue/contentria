@@ -41,9 +41,8 @@ class VideoTranscodeWorker(
 
         for (message in messages) {
             try {
-                if (handle(message)) {
-                    queueClient.ack(listOf(message.leaseId))
-                }
+                handle(message)
+                queueClient.ack(listOf(message.leaseId))
             } catch (e: Exception) {
                 log.error(e) {
                     "Transient failure for leaseId=${message.leaseId}, key=${message.objectKey}; " +
@@ -53,21 +52,25 @@ class VideoTranscodeWorker(
         }
     }
 
-    /** @return true if the message should be acked (handled), false to leave for redelivery. */
-    private fun handle(message: QueueMessage): Boolean {
+    /**
+     * Processes one message. Contract: returning normally means the message is handled
+     * (success, permanent failure, or a deliberate skip) and must be acked; a thrown
+     * exception means a transient failure — the caller leaves it unacked for redelivery.
+     */
+    private fun handle(message: QueueMessage) {
         if (message.action != ACTION_PUT_OBJECT && message.action != ACTION_COMPLETE_MULTIPART) {
             log.debug { "Ignoring action=${message.action} key=${message.objectKey}" }
-            return true
+            return
         }
 
         val job = videoJobRepository.findByRawKey(message.objectKey)
         if (job == null) {
             log.warn { "No videos row for key=${message.objectKey}; acking" }
-            return true
+            return
         }
         if (job.status == STATUS_COMPLETED || job.status == STATUS_DELETED) {
             log.info { "Video ${job.id} already ${job.status}; acking (idempotent)" }
-            return true
+            return
         }
 
         videoJobRepository.markProcessing(job.id)
@@ -85,7 +88,6 @@ class VideoTranscodeWorker(
             videoJobRepository.markFailed(job.id, e.message ?: "transcode failed")
         }
         // Transient failures propagate to poll() → left unacked → redelivery → DLQ.
-        return true
     }
 
     private fun deleteRawQuietly(rawKey: String, videoId: UUID) {
