@@ -11,11 +11,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+    implementation(libs.kotlin.logging)
 
     // Cloudflare R2 (S3-compatible): download the source + upload HLS outputs
-    implementation(platform("software.amazon.awssdk:bom:2.31.1"))
-    implementation("software.amazon.awssdk:s3")
+    implementation(platform(libs.aws.bom))
+    implementation(libs.aws.s3)
 
     // Database
     runtimeOnly("org.postgresql:postgresql")

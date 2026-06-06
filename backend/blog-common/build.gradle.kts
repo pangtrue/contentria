@@ -17,13 +17,13 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+    implementation(libs.kotlin.logging)
 
     // UUID
-    implementation("com.github.f4b6a3:uuid-creator:6.1.0")
+    implementation(libs.uuid.creator)
 
     // Slug 생성
-    implementation("com.github.slugify:slugify:3.0.7")
+    implementation(libs.slugify)
 
     // 테스트 종속성 - 명시적으로 JUnit 프레임워크 지정
     testImplementation("org.springframework.boot:spring-boot-starter-test")

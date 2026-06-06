@@ -10,18 +10,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+    implementation(libs.kotlin.logging)
 
     // Cloudflare R2 (S3-compatible): delete video objects during GC
-    implementation(platform("software.amazon.awssdk:bom:2.31.1"))
-    implementation("software.amazon.awssdk:s3")
+    implementation(platform(libs.aws.bom))
+    implementation(libs.aws.s3)
 
     // Database
     runtimeOnly("org.postgresql:postgresql")
 
-    // Testcontainers
+    // Testcontainers (version managed by the Spring Boot BOM, same as blog-api)
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.2")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testImplementation("org.testcontainers:testcontainers-postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
