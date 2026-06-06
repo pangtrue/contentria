@@ -6,6 +6,7 @@ import { Search, Home } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import UserAvatar from './header/UserAvatar';
 import ProfileDropdown from './header/ProfileDropdown';
+import DashboardMobileNav from './DashboardMobileNav';
 import { useUserProfile } from '@/hooks/queries/useUserQuery';
 import { useQueryClient } from '@tanstack/react-query';
 import { userKeys } from '@/hooks/queries/keys';
@@ -14,9 +15,11 @@ import { PATHS } from '@/constants/paths';
 
 interface DashboardHeaderProps {
   blogSlug: string | null;
+  /** (main) 레이아웃에서만 켜는 모바일 내비 Sheet 트리거 — 에디터/온보딩 헤더엔 없음 */
+  showMobileNav?: boolean;
 }
 
-export default function DashboardHeader({ blogSlug }: DashboardHeaderProps) {
+export default function DashboardHeader({ blogSlug, showMobileNav = false }: DashboardHeaderProps) {
   const isBlogLinkActive = blogSlug !== null;
   const { data: user } = useUserProfile();
   const queryClient = useQueryClient();
@@ -57,8 +60,10 @@ export default function DashboardHeader({ blogSlug }: DashboardHeaderProps) {
   return (
     <header className="sticky top-0 z-10 w-full border-b bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-        {/* 왼쪽 영역: 블로그 제목 & 검색 전환 */}
+        {/* 왼쪽 영역: 모바일 내비 + 블로그 제목 & 검색 전환 */}
         <div className="flex items-center md:w-64">
+          {showMobileNav && <DashboardMobileNav blogSlug={blogSlug} />}
+
           <Link href="/dashboard" className="text-xl font-bold md:hidden">
             Contentria
           </Link>
