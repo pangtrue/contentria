@@ -28,6 +28,13 @@ java {
     }
 }
 
+// .env files live in src/main/resources so the IDE can load them, but they must never be
+// packaged: processResources would copy them into BOOT-INF/classes (→ Docker image layers),
+// leaking real secrets. Samples are excluded too — nothing in the jar needs them.
+tasks.withType<ProcessResources> {
+    exclude("**/.env", "**/.env.sample")
+}
+
 tasks.named<Test>("test") {
     useJUnitPlatform()
 
