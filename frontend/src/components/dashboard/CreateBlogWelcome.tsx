@@ -5,8 +5,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import z from 'zod';
-import InputWithAddon from '../common/InputWithAddon';
 import { useRouter } from 'next/navigation';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from '@/components/ui/input-group';
 
 const schema = z.object({
   slug: z
@@ -39,62 +48,68 @@ export default function CreateBlogWelcome() {
   };
 
   return (
-    <div className="rounded-lg bg-white p-6 shadow-sm">
+    <Card className="p-4 shadow-sm sm:p-6">
       <div className="mx-auto max-w-xl text-center">
-        {' '}
-        {/* max-w-lg -> max-w-xl로 약간 넓게 */}
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
           당신의 공간을 만들어보세요
         </h2>
         <p className="mt-4 text-lg leading-8 text-gray-600">
           멋진 아이디어를 세상과 공유할 준비가 되셨나요? 사용할 블로그 주소를 만들어주세요.
         </p>
+
         <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-6">
-          {' '}
-          {/* mt-8 -> mt-10 */}
-          {/* InputWithAddon 컴포넌트 사용 */}
-          <InputWithAddon
-            id="slug"
-            addon="https://contentria.com/@"
-            placeholder="your-blog-name"
-            autoFocus
-            autoComplete="off"
-            errorMessage={errors.slug?.message}
-            {...register('slug')}
-          />
+          <div className="text-left">
+            <Label htmlFor="slug" className="sr-only">
+              블로그 주소
+            </Label>
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>
+                  {/* 모바일에선 addon이 한 줄을 다 차지해 입력칸이 깨지므로 @만 노출 */}
+                  <span className="hidden sm:inline">https://contentria.com/</span>@
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                id="slug"
+                placeholder="your-blog-name"
+                autoFocus
+                autoComplete="off"
+                aria-invalid={!!errors.slug}
+                aria-describedby={errors.slug ? 'slug-error' : undefined}
+                {...register('slug')}
+              />
+            </InputGroup>
+            {errors.slug && (
+              <p id="slug-error" className="mt-2 text-sm font-medium text-destructive">
+                {errors.slug.message}
+              </p>
+            )}
+          </div>
+
           {error && (
-            <div className="rounded-md bg-red-50 p-4 text-left">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <AlertTriangle className="h-5 w-5 text-red-400" aria-hidden="true" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">{error.message}</h3>
-                </div>
-              </div>
-            </div>
+            <Alert variant="destructive" className="text-left">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>블로그 생성에 실패했습니다</AlertTitle>
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
           )}
-          <button
-            type="submit"
-            disabled={isPending}
-            className="flex w-full items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-indigo-400" // py-3 -> py-3.5, font-medium -> font-semibold
-          >
+
+          <Button type="submit" size="lg" className="w-full" disabled={isPending}>
             {isPending ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <Loader2 className="animate-spin" />
                 생성 중...
               </>
             ) : (
               '내 블로그 생성하기'
             )}
-          </button>
+          </Button>
         </form>
+
         <p className="mt-6 text-sm text-gray-500">
-          {' '}
-          {/* mt-4 -> mt-6 */}
           블로그 주소는 나중에 변경할 수 없으니 신중하게 선택해주세요.
         </p>
       </div>
-    </div>
+    </Card>
   );
 }
