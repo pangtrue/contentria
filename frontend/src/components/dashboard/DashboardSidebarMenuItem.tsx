@@ -6,12 +6,14 @@ const SidebarMenuItem = ({
   icon,
   isActive,
   disabled,
+  onClick,
 }: {
   path: string;
   label: string;
   icon: React.ReactNode;
   isActive: boolean;
   disabled: boolean;
+  onClick?: () => void;
 }) => {
   const commonClasses = 'flex items-center rounded-lg px-3 py-2';
 
@@ -29,7 +31,7 @@ const SidebarMenuItem = ({
     : 'text-gray-600 hover:bg-gray-100';
 
   return (
-    <Link href={path} className={`${commonClasses} ${activeClasses}`}>
+    <Link href={path} onClick={onClick} className={`${commonClasses} ${activeClasses}`}>
       <span className="mr-3">{icon}</span>
       <span>{label}</span>
     </Link>
