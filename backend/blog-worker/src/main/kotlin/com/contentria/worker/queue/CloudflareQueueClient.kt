@@ -7,6 +7,7 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.Duration
 import tools.jackson.databind.ObjectMapper
 
 private val log = KotlinLogging.logger {}
@@ -26,7 +27,11 @@ class CloudflareQueueClient(
     private val objectMapper: ObjectMapper,
 ) {
 
-    private val httpClient: HttpClient = HttpClient.newHttpClient()
+    // Timeouts are mandatory here: the poll loop runs on a single scheduler thread, so a
+    // hung connection without a timeout would stall the whole worker permanently.
+    private val httpClient: HttpClient = HttpClient.newBuilder()
+        .connectTimeout(CONNECT_TIMEOUT)
+        .build()
 
     private fun queueUrl(): String =
         "${props.baseUrl}/accounts/${props.accountId}/queues/${props.queueId}"
@@ -63,6 +68,7 @@ class CloudflareQueueClient(
 
     private fun send(url: String, jsonBody: String): String {
         val request = HttpRequest.newBuilder(URI.create(url))
+            .timeout(REQUEST_TIMEOUT)
             .header("Authorization", "Bearer ${props.apiToken}")
             .header("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
@@ -73,6 +79,15 @@ class CloudflareQueueClient(
             throw CloudflareQueueException("Cloudflare Queue request failed: $url -> ${response.statusCode()} ${response.body()}")
         }
         return response.body()
+    }
+
+    companion object {
+        private val CONNECT_TIMEOUT: Duration = Duration.ofSeconds(10)
+
+        // Cloudflare's pull returns immediately (it is not a long-poll), so 30s is generous.
+        // A timeout surfaces as an exception -> caught by the poll loop -> retried next tick;
+        // unacked messages are redelivered after the queue's visibility timeout.
+        private val REQUEST_TIMEOUT: Duration = Duration.ofSeconds(30)
     }
 }
 
