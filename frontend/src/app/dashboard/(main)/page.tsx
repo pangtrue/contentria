@@ -11,8 +11,7 @@ import { getMyBlogAction } from '@/actions/blog';
 import { getQueryClient } from '@/lib/getQueryClient';
 
 export default async function DashboardPage() {
-  const user = await getRawUserProfileAction();
-  const blogInfos = await getMyBlogAction();
+  const [user, blogInfos] = await Promise.all([getRawUserProfileAction(), getMyBlogAction()]);
 
   if (!blogInfos || blogInfos.length === 0) {
     return <CreateBlogWelcome />;
