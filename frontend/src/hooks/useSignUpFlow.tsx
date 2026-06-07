@@ -1,3 +1,4 @@
+import { startGoogleLogin } from '@/lib/oauth';
 import { SignUpStep } from '@/components/auth/types';
 import { RECAPTCHA_SIGN_UP_ACTION } from '@/constants/auth';
 import { SignUpEmailStepFormData } from '@/lib/schemas/authSchemas';
@@ -119,15 +120,6 @@ function useSignUpFlowLogic() {
     updateFormData(field, value);
     if (field === 'verificationCode' && value.length === 6) {
       verifyOtp({ email: formData.email, verificationCode: value });
-    }
-  }
-
-  function startGoogleLogin() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (baseUrl) {
-      window.location.href = `${baseUrl}/api/oauth2/authorization/google`;
-    } else {
-      console.error('API base URL is not configured.');
     }
   }
 
