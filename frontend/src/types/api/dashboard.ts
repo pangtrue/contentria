@@ -16,6 +16,8 @@ export interface PopularPostResponse {
 export type TimeRange = '2weeks' | '30days' | '90days';
 
 export interface TrafficChartResponse {
+  /** 30days 범위에서는 ISO(yyyy-MM-dd) — 차트가 일/월 축 라벨을 직접 구성한다 */
   date: string;
   visitors: number;
+  views: number;
 }

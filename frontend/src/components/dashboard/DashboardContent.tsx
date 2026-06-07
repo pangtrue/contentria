@@ -6,12 +6,10 @@ import {
   useTrafficChartQuery,
 } from '@/hooks/queries/useDashboardQueries';
 import Link from 'next/link';
-import { useState } from 'react';
 import PopularPostList from './PopularPostList';
 import { ArrowRight, Eye, FileText, Loader2, MessageSquare } from 'lucide-react';
 import TrafficChart from './TrafficChart';
 import StatCard from './StatCard';
-import { TimeRange } from '@/types/api/dashboard';
 import { User } from '@/types/api/user';
 import { BlogInfo } from '@/types/api/blogs';
 import { formatTrend } from '@/lib/utils';
@@ -22,14 +20,14 @@ interface DashboardContentProps {
 }
 
 export default function DashboardContent({ user, blogInfos }: DashboardContentProps) {
-  const [timeRange, setTimeRange] = useState<TimeRange>('2weeks');
   const slug = blogInfos?.[0]?.slug;
 
   const { data: stats } = useDashboadStatsQuery(slug!);
   const { data: popularPosts } = usePopularPostsQuery(slug!);
+  // 기간 선택 없이 최근 30일 고정
   const { data: trafficChart, isFetching: isTrafficFetching } = useTrafficChartQuery(
     slug!,
-    timeRange
+    '30days'
   );
 
   const todayTrend = formatTrend(stats?.todayVisitorsGrowthRate);
@@ -79,47 +77,36 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
         </>
       </div>
 
-      {/* 콘텐츠 그리드 */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* 트래픽 차트 */}
-        <div className="rounded-lg bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">트래픽 현황</h2>
-            <select
-              className="rounded-md border border-gray-300 px-2 py-1 text-sm"
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-            >
-              <option value="2weeks">지난 2주</option>
-              <option value="30days">지난 30일</option>
-              <option value="90days">지난 90일</option>
-            </select>
-          </div>
-          {isTrafficFetching ? (
-            <div className="flex h-[250px] items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-            </div>
-          ) : (
-            <TrafficChart data={trafficChart || []} />
-          )}
+      {/* 트래픽 차트 — 전체 폭 */}
+      <div className="rounded-lg bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-baseline gap-2">
+          <h2 className="text-lg font-semibold">트래픽 현황</h2>
+          <span className="text-sm text-gray-400">최근 30일</span>
         </div>
-
-        {/* 인기 글 */}
-        <div className="rounded-lg bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">인기 게시글</h2>
-            <Link href="/dashboard/posts" className="text-sm text-indigo-600 hover:text-indigo-800">
-              전체보기
-            </Link>
+        {isTrafficFetching ? (
+          <div className="flex h-[280px] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
           </div>
-          <PopularPostList posts={popularPosts || []} />
-          <Link
-            href="/dashboard/posts"
-            className="mt-4 flex items-center justify-center text-sm text-indigo-600 hover:text-indigo-800"
-          >
-            모든 게시글 보기 <ArrowRight size={16} className="ml-1" />
+        ) : (
+          <TrafficChart data={trafficChart || []} />
+        )}
+      </div>
+
+      {/* 인기 글 — 다음 행 */}
+      <div className="rounded-lg bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">인기 게시글</h2>
+          <Link href="/dashboard/posts" className="text-sm text-indigo-600 hover:text-indigo-800">
+            전체보기
           </Link>
         </div>
+        <PopularPostList posts={popularPosts || []} />
+        <Link
+          href="/dashboard/posts"
+          className="mt-4 flex items-center justify-center text-sm text-indigo-600 hover:text-indigo-800"
+        >
+          모든 게시글 보기 <ArrowRight size={16} className="ml-1" />
+        </Link>
       </div>
     </div>
   );
