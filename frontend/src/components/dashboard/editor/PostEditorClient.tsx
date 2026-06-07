@@ -47,6 +47,7 @@ import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
 import CustomImageDialog from '@/components/dashboard/editor/CustomImageDialog';
 import VideoUpload from '@/components/dashboard/editor/VideoUpload';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -257,139 +258,137 @@ function helloWorld() {
 
       <VideoUpload value={videoId} onChange={setVideoId} />
 
-      {/* 타이틀과 본문이 같은 흰 '종이' 표면을 공유해야 문서형 타이틀이 성립한다
-          (회색 페이지 배경 위에 두면 placeholder만 떠 보임 — Notion/Velog 구조) */}
-      <div className="flex flex-1 flex-col rounded-md border bg-white">
-        <div className="border-b px-6 pb-4 pt-6">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="제목을 입력하세요"
-            className="w-full bg-transparent text-3xl font-bold tracking-tight text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-4xl"
-          />
-        </div>
+      {/* 박스형 타이틀(a안): 고정 툴바가 타이틀-본문 사이를 끊으므로
+          문서형(borderless) 대신 필드형을 유지한다 — 포커스 링은 테마(--ring) 적용 */}
+      <div className="mb-4">
+        <Input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="제목을 입력하세요"
+          className="h-auto bg-white px-4 py-3 text-2xl font-semibold md:text-2xl"
+        />
+      </div>
 
-        <div
-          className="flex flex-1 cursor-text flex-col [&_.mdxeditor-toolbar]:cursor-default"
-          onClick={handleEditorAreaClick}
-        >
-          <ForwardRefEditor
-            ref={editorRef}
-            markdown={markdown}
-            onChange={console.log}
-            spellCheck={false}
-            className="prose max-w-none flex-1"
-            plugins={[
-              headingsPlugin({ allowedHeadingLevels: [1, 2, 3] }),
-              quotePlugin(),
-              listsPlugin(),
-              thematicBreakPlugin(),
-              linkPlugin(),
-              linkDialogPlugin(),
-              tablePlugin(),
-              imagePlugin({
-                imageUploadHandler: async (image: File) => {
-                  return await uploadImageToR2(image);
-                },
-                ImageDialog: CustomImageDialog,
-              }),
-              markdownShortcutPlugin(),
-              // the default code block language to insert when user clicks the "insert code block" button
-              codeBlockPlugin({
-                defaultCodeBlockLanguage: 'js',
-                codeBlockEditorDescriptors: [
-                  { priority: -10, match: (_) => true, Editor: CodeMirrorEditor },
-                ],
-              }),
-              codeMirrorPlugin({
-                codeBlockLanguages: {
-                  js: 'JavaScript',
-                  ts: 'TypeScript',
-                  html: 'HTML',
-                  css: 'CSS',
-                  java: 'Java',
-                  kotlin: 'Kotlin',
-                  bash: 'Bash',
-                },
-              }),
-              // the viewMode parameter lets you switch the editor to diff or source mode.
-              // you can get the diffMarkdown from your backend and pass it here.
-              diffSourcePlugin({ diffMarkdown: 'An older version', viewMode: 'rich-text' }),
-              toolbarPlugin({
-                toolbarContents: () => (
-                  <DiffSourceToggleWrapper>
-                    <ConditionalContents
-                      options={[
-                        {
-                          when: (editor) => editor?.editorType === 'codeblock',
-                          contents: () => <ChangeCodeMirrorLanguage />,
-                        },
-                        {
-                          when: (editor) => editor?.editorType === 'sandpack',
-                          contents: () => <ShowSandpackInfo />,
-                        },
-                        {
-                          fallback: () => (
-                            <>
-                              <UndoRedo />
-                              <Separator />
-                              <BoldItalicUnderlineToggles />
-                              <CodeToggle />
-                              <HighlightToggle />
-                              <Separator />
-                              <StrikeThroughSupSubToggles />
-                              <Separator />
-                              <ListsToggle />
-                              <Separator />
+      <div
+        className="flex flex-1 cursor-text flex-col rounded-md border bg-white [&_.mdxeditor-toolbar]:cursor-default"
+        onClick={handleEditorAreaClick}
+      >
+        <ForwardRefEditor
+          ref={editorRef}
+          markdown={markdown}
+          onChange={console.log}
+          spellCheck={false}
+          className="prose max-w-none flex-1"
+          plugins={[
+            headingsPlugin({ allowedHeadingLevels: [1, 2, 3] }),
+            quotePlugin(),
+            listsPlugin(),
+            thematicBreakPlugin(),
+            linkPlugin(),
+            linkDialogPlugin(),
+            tablePlugin(),
+            imagePlugin({
+              imageUploadHandler: async (image: File) => {
+                return await uploadImageToR2(image);
+              },
+              ImageDialog: CustomImageDialog,
+            }),
+            markdownShortcutPlugin(),
+            // the default code block language to insert when user clicks the "insert code block" button
+            codeBlockPlugin({
+              defaultCodeBlockLanguage: 'js',
+              codeBlockEditorDescriptors: [
+                { priority: -10, match: (_) => true, Editor: CodeMirrorEditor },
+              ],
+            }),
+            codeMirrorPlugin({
+              codeBlockLanguages: {
+                js: 'JavaScript',
+                ts: 'TypeScript',
+                html: 'HTML',
+                css: 'CSS',
+                java: 'Java',
+                kotlin: 'Kotlin',
+                bash: 'Bash',
+              },
+            }),
+            // the viewMode parameter lets you switch the editor to diff or source mode.
+            // you can get the diffMarkdown from your backend and pass it here.
+            diffSourcePlugin({ diffMarkdown: 'An older version', viewMode: 'rich-text' }),
+            toolbarPlugin({
+              toolbarContents: () => (
+                <DiffSourceToggleWrapper>
+                  <ConditionalContents
+                    options={[
+                      {
+                        when: (editor) => editor?.editorType === 'codeblock',
+                        contents: () => <ChangeCodeMirrorLanguage />,
+                      },
+                      {
+                        when: (editor) => editor?.editorType === 'sandpack',
+                        contents: () => <ShowSandpackInfo />,
+                      },
+                      {
+                        fallback: () => (
+                          <>
+                            <UndoRedo />
+                            <Separator />
+                            <BoldItalicUnderlineToggles />
+                            <CodeToggle />
+                            <HighlightToggle />
+                            <Separator />
+                            <StrikeThroughSupSubToggles />
+                            <Separator />
+                            <ListsToggle />
+                            <Separator />
 
-                              <ConditionalContents
-                                options={[
-                                  {
-                                    when: whenInAdmonition,
-                                    contents: () => <ChangeAdmonitionType />,
-                                  },
-                                  { fallback: () => <BlockTypeSelect /> },
-                                ]}
-                              />
+                            <ConditionalContents
+                              options={[
+                                {
+                                  when: whenInAdmonition,
+                                  contents: () => <ChangeAdmonitionType />,
+                                },
+                                { fallback: () => <BlockTypeSelect /> },
+                              ]}
+                            />
 
-                              <Separator />
-                              <CreateLink />
-                              <CustomInsertImage />
-                              <Separator />
-                              <InsertTable />
-                              <InsertThematicBreak />
-                              <Separator />
-                              <InsertCodeBlock />
-                              <ConditionalContents
-                                options={[
-                                  {
-                                    when: (editorInFocus) => !whenInAdmonition(editorInFocus),
-                                    contents: () => (
-                                      <>
-                                        <Separator />
-                                        <InsertAdmonition />
-                                      </>
-                                    ),
-                                  },
-                                ]}
-                              />
-                              <Separator />
-                              <InsertFrontmatter />
-                            </>
-                          ),
-                        },
-                      ]}
-                    />
-                  </DiffSourceToggleWrapper>
-                ),
-              }),
-              directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
-              frontmatterPlugin(),
-              markdownShortcutPlugin(),
-            ]}
-          />
-        </div>
+                            <Separator />
+                            <CreateLink />
+                            <CustomInsertImage />
+                            <Separator />
+                            <InsertTable />
+                            <InsertThematicBreak />
+                            <Separator />
+                            <InsertCodeBlock />
+                            <ConditionalContents
+                              options={[
+                                {
+                                  when: (editorInFocus) => !whenInAdmonition(editorInFocus),
+                                  contents: () => (
+                                    <>
+                                      <Separator />
+                                      <InsertAdmonition />
+                                    </>
+                                  ),
+                                },
+                              ]}
+                            />
+                            <Separator />
+                            <InsertFrontmatter />
+                          </>
+                        ),
+                      },
+                    ]}
+                  />
+                </DiffSourceToggleWrapper>
+              ),
+            }),
+            directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
+            frontmatterPlugin(),
+            markdownShortcutPlugin(),
+          ]}
+        />
       </div>
 
       <div className="mt-6 flex items-center justify-between">
