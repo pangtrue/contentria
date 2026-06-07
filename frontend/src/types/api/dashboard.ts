@@ -10,6 +10,8 @@ export interface StatsResponse {
 export interface PopularPostResponse {
   id: string;
   title: string;
+  /** 리더 URL(/@{blogSlug}/{slug}) 구성용 게시글 슬러그 */
+  slug: string;
   views: number;
 }
 
