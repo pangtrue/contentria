@@ -3,6 +3,12 @@ package com.contentria.common.domain.analytics
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 
+/** A single day's traffic metrics on the trend series. */
+data class DailyTrendPoint(
+    val visitors: Long,
+    val views: Long
+)
+
 @Component
 class VisitorTrendProcessor {
 
@@ -10,20 +16,23 @@ class VisitorTrendProcessor {
         startDate: LocalDate,
         endDate: LocalDate,
         historyStatsMap: Map<LocalDate, DailyStatistics>,
-        todayVisitors: Long
-    ): Map<LocalDate, Long> {
-        val result = mutableMapOf<LocalDate, Long>()
+        todayVisitors: Long,
+        todayViews: Long
+    ): Map<LocalDate, DailyTrendPoint> {
+        val result = mutableMapOf<LocalDate, DailyTrendPoint>()
         val today = LocalDate.now()
 
         var currentDate = startDate
         while (!currentDate.isAfter(endDate)) {
-            val visitors = if (currentDate.isEqual(today)) {
-                todayVisitors
+            val point = if (currentDate.isEqual(today)) {
+                // Today's stats are not aggregated into daily_statistics yet; use live counts.
+                DailyTrendPoint(visitors = todayVisitors, views = todayViews)
             } else {
-                historyStatsMap[currentDate]?.visitCount ?: 0L
+                val stats = historyStatsMap[currentDate]
+                DailyTrendPoint(visitors = stats?.visitCount ?: 0L, views = stats?.viewCount ?: 0L)
             }
 
-            result[currentDate] = visitors
+            result[currentDate] = point
             currentDate = currentDate.plusDays(1)
         }
 

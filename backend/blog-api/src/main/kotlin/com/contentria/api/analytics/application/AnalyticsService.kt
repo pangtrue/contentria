@@ -88,10 +88,12 @@ class AnalyticsService(
         val today = LocalDate.now(zoneId)
         val isTodayIncluded = !today.isBefore(startDate) && !today.isAfter(endDate)
 
-        val todayVisitors = if (isTodayIncluded) {
-            visitLogRepository.countTodayVisitors(blogId, today.atStartOfDay(zoneId))
+        val (todayVisitors, todayViews) = if (isTodayIncluded) {
+            val startOfToday = today.atStartOfDay(zoneId)
+            visitLogRepository.countTodayVisitors(blogId, startOfToday) to
+                visitLogRepository.countTodayViews(blogId, startOfToday)
         } else {
-            0L
+            0L to 0L
         }
 
         val trendSeriesMap = visitorTrendProcessor.generateTrendSeries(
@@ -99,12 +101,14 @@ class AnalyticsService(
             endDate = endDate,
             historyStatsMap = historyStatsMap,
             todayVisitors = todayVisitors,
+            todayViews = todayViews,
         )
 
-        return trendSeriesMap.map { (date, count) ->
+        return trendSeriesMap.map { (date, point) ->
             VisitorTrendInfo(
                 date = date.format(formatter),
-                count = count
+                visitors = point.visitors,
+                views = point.views
             )
         }
     }
