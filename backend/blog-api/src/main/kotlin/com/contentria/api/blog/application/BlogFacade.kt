@@ -41,6 +41,11 @@ class BlogFacade(
         )
     }
 
+    /** 블로그 제목/설명 수정 (소유자 검증 포함) */
+    fun updateBlogSettings(userId: UUID, blogSlug: String, title: String, description: String?): BlogInfo {
+        return blogService.updateBlogSettings(userId, blogSlug, title, description)
+    }
+
     @Transactional
     fun createBlogWithSamples(userId: UUID, request: CreateBlogCommand): BlogInfo {
         val user = userService.getActiveUserInfo(userId)
