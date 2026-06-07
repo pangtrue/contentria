@@ -29,6 +29,13 @@ body {
   }
 }
 
+/* reCAPTCHA v3 우하단 플로팅 배지: 모바일에서 인증 화면 하단 약관 문구를 가린다.
+   구글 FAQ에 따라 보호 문구("This site is protected by reCAPTCHA...")를 화면에
+   표기하는 조건으로 배지 숨김이 허용됨 — (auth) 레이아웃 푸터에 문구 표기 중. */
+.grecaptcha-badge {
+  visibility: hidden;
+}
+
 /* 웨이브 애니메이션 Keyframes: 점프 후 복귀 및 색상 변경 */
 @keyframes wave-jump-return {
   0% {
