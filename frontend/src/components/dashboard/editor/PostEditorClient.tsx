@@ -46,6 +46,14 @@ import { ForwardRefEditor } from '@/components/dashboard/ForwardRefEditor';
 import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
 import CustomImageDialog from '@/components/dashboard/editor/CustomImageDialog';
 import VideoUpload from '@/components/dashboard/editor/VideoUpload';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { createNewPostAction, updatePostAction } from '@/actions/post';
 import { uploadImageToR2 } from '@/lib/uploadImage';
 import { PostDetailResponse, PostStatus } from '@/types/api/posts';
@@ -232,34 +240,31 @@ function helloWorld() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col p-4 md:p-8">
       <div className="mb-4 flex items-center space-x-4">
-        <select
-          id="category"
-          name="category"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm md:w-60"
-        >
-          <option value="" disabled>
-            --- 카테고리 선택 ---
-          </option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.level > 0 ? '  └ ' : ''}
-              {category.name}
-            </option>
-          ))}
-        </select>
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-full md:w-60" aria-label="카테고리 선택">
+            <SelectValue placeholder="카테고리 선택" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.level > 0 ? '└ ' : ''}
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <VideoUpload value={videoId} onChange={setVideoId} />
 
+      {/* 문서형(borderless) 타이틀 — 폼 인풋이 아니라 글의 제목이라는 멘탈모델에 맞춘다 */}
       <div className="mb-4">
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="제목을 입력하세요"
-          className="w-full rounded-md border border-gray-300 bg-white px-4 py-3 text-2xl font-semibold placeholder-gray-400 transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="w-full bg-transparent px-1 py-2 text-3xl font-bold tracking-tight text-gray-900 placeholder:text-gray-300 focus:outline-none sm:text-4xl"
         />
       </div>
 
@@ -385,30 +390,23 @@ function helloWorld() {
       </div>
 
       <div className="mt-6 flex items-center justify-between">
-        <button
-          onClick={handleExit}
-          className="group flex items-center rounded-lg bg-white px-6 py-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+        <Button variant="ghost" onClick={handleExit} className="group text-gray-500">
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           <span className="font-semibold">나가기</span>
-        </button>
+        </Button>
 
         <div className="flex items-center justify-end space-x-3">
-          <button
+          <Button
+            variant="secondary"
             onClick={() => handleSave('DRAFT')}
             disabled={saveStatus === 'saving'}
-            className="bg-border-gray-300 rounded-md bg-white px-6 py-2 font-semibold text-gray-700 transition hover:bg-gray-200"
           >
             임시 저장
-          </button>
+          </Button>
 
-          <button
-            onClick={() => handleSave('PUBLISHED')}
-            disabled={saveStatus === 'saving'}
-            className="rounded-md bg-indigo-500 px-6 py-2 font-semibold text-white transition hover:bg-indigo-700"
-          >
+          <Button onClick={() => handleSave('PUBLISHED')} disabled={saveStatus === 'saving'}>
             출간하기
-          </button>
+          </Button>
         </div>
       </div>
     </div>
