@@ -8,7 +8,7 @@ import {
 import Link from 'next/link';
 import PopularPostList from './PopularPostList';
 import { ArrowRight, Eye, FileText, Loader2, MessageSquare } from 'lucide-react';
-import TrafficChart from './TrafficChart';
+import TrafficChart, { TRAFFIC_SERIES } from './TrafficChart';
 import StatCard from './StatCard';
 import { User } from '@/types/api/user';
 import { BlogInfo } from '@/types/api/blogs';
@@ -79,9 +79,23 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
 
       {/* 트래픽 차트 — 전체 폭 */}
       <div className="rounded-lg bg-white p-5 shadow-sm">
-        <div className="mb-4 flex items-baseline gap-2">
-          <h2 className="text-lg font-semibold">트래픽 현황</h2>
-          <span className="text-sm text-gray-400">최근 30일</span>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-lg font-semibold">트래픽 현황</h2>
+            <span className="text-sm text-gray-400">최근 30일</span>
+          </div>
+          {/* 범례: 차트의 TRAFFIC_SERIES와 같은 색 정의를 공유 */}
+          <div className="flex items-center gap-4">
+            {TRAFFIC_SERIES.map((series) => (
+              <span key={series.key} className="flex items-center gap-1.5 text-sm text-gray-600">
+                <span
+                  className="h-0.5 w-4 rounded-full"
+                  style={{ backgroundColor: series.color }}
+                />
+                {series.name}
+              </span>
+            ))}
+          </div>
         </div>
         {isTrafficFetching ? (
           <div className="flex h-[280px] items-center justify-center">

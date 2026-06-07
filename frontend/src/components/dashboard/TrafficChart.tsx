@@ -1,6 +1,5 @@
 import {
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -9,6 +8,12 @@ import {
   YAxis,
 } from 'recharts';
 import { TrafficChartResponse } from '@/types/api/dashboard';
+
+/** 시리즈 정의 단일 소스 — 차트 선과 카드 헤더의 범례가 같은 색을 공유한다 */
+export const TRAFFIC_SERIES = [
+  { key: 'views', name: '조회수', color: '#0ea5e9' },
+  { key: 'visitors', name: '방문자수', color: '#4f46e5' },
+] as const;
 
 /** 툴팁/월 라벨용 — ISO(yyyy-MM-dd) 날짜를 "6월 24일" 형태로 */
 const formatKoreanDate = (iso: string) => {
@@ -68,25 +73,19 @@ const TrafficChart = ({ data }: { data: TrafficChartResponse[] }) => {
         {/* 세로축은 숨긴다(소수점 틱 노이즈 제거) — 수치는 호버 툴팁으로 확인 */}
         <YAxis hide allowDecimals={false} />
         <Tooltip labelFormatter={(iso) => formatKoreanDate(String(iso))} />
-        <Legend wrapperStyle={{ paddingTop: 8 }} iconType="plainline" />
-        <Line
-          type="monotone"
-          dataKey="views"
-          name="조회수"
-          stroke="#0ea5e9"
-          strokeWidth={2.5}
-          dot={false}
-          activeDot={{ r: 4 }}
-        />
-        <Line
-          type="monotone"
-          dataKey="visitors"
-          name="방문자수"
-          stroke="#4f46e5"
-          strokeWidth={2.5}
-          dot={false}
-          activeDot={{ r: 4 }}
-        />
+        {/* 범례는 카드 헤더 우측(DashboardContent)에서 TRAFFIC_SERIES로 렌더링한다 */}
+        {TRAFFIC_SERIES.map((series) => (
+          <Line
+            key={series.key}
+            type="monotone"
+            dataKey={series.key}
+            name={series.name}
+            stroke={series.color}
+            strokeWidth={2.5}
+            dot={false}
+            activeDot={{ r: 4 }}
+          />
+        ))}
       </LineChart>
     </ResponsiveContainer>
   );
