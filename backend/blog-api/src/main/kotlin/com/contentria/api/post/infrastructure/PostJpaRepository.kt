@@ -4,6 +4,7 @@ import com.contentria.api.post.domain.Post
 import com.contentria.api.post.domain.PostStatus
 import com.contentria.api.post.domain.query.CategoryPostCount
 import com.contentria.api.post.domain.query.PostSummary
+import com.contentria.api.post.domain.query.RecentPublishedPost
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -63,6 +64,28 @@ interface PostJpaRepository : JpaRepository<Post, UUID> {
         statuses: Set<PostStatus>,
         pageable: Pageable
     ): Page<PostSummary>
+
+    // 홈 화면용: 전체 블로그의 최신 공개 글 (요약 폴백은 findPostSummaries와 동일 로직)
+    @Query("""
+        SELECT new com.contentria.api.post.domain.query.RecentPublishedPost(
+            p.id,
+            p.title,
+            CASE
+                WHEN p.metaDescription IS NOT NULL AND TRIM(p.metaDescription) <> '' THEN p.metaDescription
+                ELSE CONCAT(SUBSTRING(CAST(p.contentMarkdown AS string), 1, 100), '...')
+            END,
+            p.slug,
+            b.slug,
+            b.title,
+            p.publishedAt
+        )
+        FROM Post p
+        JOIN Blog b ON p.blogId = b.id
+        WHERE p.status = com.contentria.api.post.domain.PostStatus.PUBLISHED
+        ORDER BY p.publishedAt DESC
+    """)
+    fun findRecentPublished(pageable: Pageable): List<RecentPublishedPost>
+
 
     @Query("""
         SELECT p

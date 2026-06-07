@@ -1,5 +1,6 @@
 package com.contentria.api.post.application
 
+import com.contentria.api.post.application.dto.RecentPostInfo
 import com.contentria.common.global.error.ContentriaException
 import com.contentria.common.global.error.ErrorCode
 import com.contentria.api.post.application.dto.PostContentInfo
@@ -56,6 +57,12 @@ class PostService(
     @Transactional(readOnly = true)
     fun countPublishedPosts(blogId: UUID): Long {
         return postRepository.countByBlogIdAndStatus(blogId, PostStatus.PUBLISHED)
+    }
+
+    /** 홈 화면 "최근 발행된 글" — 전체 블로그의 최신 공개 글 */
+    @Transactional(readOnly = true)
+    fun getRecentPublishedPosts(limit: Int): List<RecentPostInfo> {
+        return postRepository.findRecentPublished(limit).map { RecentPostInfo.from(it) }
     }
 
     @Transactional
