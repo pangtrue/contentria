@@ -86,7 +86,7 @@ export function PostEditorClient({ blogId, categories, initialData }: PostEditor
   const router = useRouter();
   const editorRef = useRef<MDXEditorMethods>(null); // MDXEditor의 인스턴스에 접근하기 위한 ref 생성
 
-  const [title, setTitle] = useState(initialData?.post.title || '');
+  const titleRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | ''>(
     initialData?.categoryId || ''
   );
@@ -179,6 +179,7 @@ function helloWorld() {
   const handleSave = useCallback(
     async (postStatus: PostStatus) => {
       setSaveStatus('saving');
+      const title = titleRef.current?.value ?? '';
       const markdownContent = editorRef.current?.getMarkdown() || '';
       console.log(markdownContent);
 
@@ -229,7 +230,7 @@ function helloWorld() {
       // editorRef.current?.setMarkdown('새로운 마크다운 내용');
       // console.log(editorRef.current?.getMarkdown());
     },
-    [title, selectedCategory, blogId, router, initialData, videoId]
+    [selectedCategory, blogId, router, initialData, videoId]
   );
 
   const handleExit = () => {
@@ -259,12 +260,14 @@ function helloWorld() {
       <VideoUpload value={videoId} onChange={setVideoId} />
 
       {/* 박스형 타이틀(a안): 고정 툴바가 타이틀-본문 사이를 끊으므로
-          문서형(borderless) 대신 필드형을 유지한다 — 포커스 링은 테마(--ring) 적용 */}
+          문서형(borderless) 대신 필드형을 유지한다 — 포커스 링은 테마(--ring) 적용.
+          uncontrolled(ref): controlled로 두면 키 입력마다 MDXEditor를 포함한
+          트리 전체가 리렌더되어 타이핑이 밀린다. 값은 저장 시에만 읽는다. */}
       <div className="mb-4">
         <Input
+          ref={titleRef}
           type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          defaultValue={initialData?.post.title || ''}
           placeholder="제목을 입력하세요"
           className="h-auto bg-white px-4 py-3 text-2xl font-semibold md:text-2xl"
         />
