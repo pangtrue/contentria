@@ -28,3 +28,18 @@ export async function createBlogAction(payload: CreateBlogPayload): Promise<Crea
     requireAuth: true,
   });
 }
+
+export interface UpdateBlogSettingsPayload {
+  title: string;
+  description: string | null;
+}
+
+/** 블로그 제목/설명 수정 — 소유자 전용 (slug는 변경 불가) */
+export async function updateBlogSettingsAction(
+  blogSlug: string,
+  payload: UpdateBlogSettingsPayload
+): Promise<BlogInfo> {
+  return await apiServer.put<BlogInfo>(`/api/blogs/${blogSlug}/settings`, payload, {
+    requireAuth: true,
+  });
+}

@@ -6,6 +6,7 @@ import com.contentria.api.blog.controller.dto.BlogLayoutResponse
 import com.contentria.api.blog.controller.dto.BlogResponse
 import com.contentria.api.blog.controller.dto.CreateBlogRequest
 import com.contentria.api.blog.controller.dto.CreateBlogResponse
+import com.contentria.api.blog.controller.dto.UpdateBlogSettingsRequest
 import com.contentria.common.global.error.ContentriaException
 import com.contentria.common.global.error.ErrorCode
 import jakarta.validation.Valid
@@ -59,5 +60,22 @@ class BlogController(
 
         val blogResponse = blogFacade.createBlogWithSamples(userId, request.toCommand())
         return ResponseEntity.status(HttpStatus.CREATED).body(CreateBlogResponse.from(blogResponse))
+    }
+
+    /** 블로그 제목/설명 수정 — 소유자만 가능 (slug는 변경 불가) */
+    @PutMapping("/{blogSlug}/settings")
+    @PreAuthorize("isAuthenticated()")
+    fun updateBlogSettings(
+        @AuthenticationPrincipal userDetails: AuthUserDetails,
+        @PathVariable blogSlug: String,
+        @Valid @RequestBody request: UpdateBlogSettingsRequest
+    ): ResponseEntity<BlogResponse> {
+        val blogInfo = blogFacade.updateBlogSettings(
+            userId = userDetails.userId,
+            blogSlug = blogSlug,
+            title = request.title,
+            description = request.description
+        )
+        return ResponseEntity.ok(BlogResponse.from(blogInfo))
     }
 }
