@@ -230,6 +230,22 @@ body {
   padding: 1px;
 }
 
+/* 테이블 도구 컬럼(왼쪽 행 ··· / 오른쪽 열 추가 +, 각 2rem)이 표 "안"에 있어서
+   표만 본문보다 들여써 보인다. 본문에 도구 컬럼 폭만큼 좌우 거터를 확보하고
+   테이블을 정확히 그만큼 당겨서, 콘텐츠 셀은 본문 텍스트와 정렬되고 컨트롤은
+   여백에 떠 있게 한다(Notion 방식). 루트 _contentEditable_ 클래스는 중첩(셀)
+   에디터에서는 쓰이지 않으므로 셀 내부 패딩에는 영향이 없다. */
+.mdxeditor.prose [class*='_contentEditable_'] {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.mdxeditor.prose [class*='_tableEditor_'] {
+  width: calc(100% + 4rem);
+  margin-left: -2rem;
+  margin-right: -2rem;
+}
+
 /* rehypeAutolinkHeadings(behavior: 'wrap') wraps heading text in <a>.
    prose-indigo would render that as purple, underlined, weight 500 — making
    headings look like links. Strip link styling inside headings; keep hover
