@@ -10,7 +10,7 @@ data class RecentPostInfo(
     val summary: String,
     val postSlug: String,
     val blogSlug: String,
-    val blogTitle: String,
+    val authorNickname: String,
     val publishedAt: ZonedDateTime?
 ) {
     companion object {
@@ -21,7 +21,7 @@ data class RecentPostInfo(
                 summary = post.summary,
                 postSlug = post.postSlug,
                 blogSlug = post.blogSlug,
-                blogTitle = post.blogTitle,
+                authorNickname = post.authorNickname,
                 publishedAt = post.publishedAt
             )
         }
