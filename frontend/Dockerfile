@@ -1,7 +1,7 @@
 # =============================================================================
 # [ DOCKERFILE ARCHITECTURE & INTENT ]
 #
-# This Dockerfile utilizes a "Multi-Stage Build" pattern tailored for Next.js 15.
+# This Dockerfile utilizes a "Multi-Stage Build" pattern tailored for Next.js 16.
 # It leverages Next.js's "standalone" output feature to create a highly
 # optimized, lightweight, and secure production-ready Docker image.
 #
@@ -18,9 +18,13 @@
 
 # =============================================================================
 # BASE STAGE: Common Environment Setup
-# Defines the Node.js version and Alpine Linux base for all subsequent stages.
+# Debian-slim (glibc) instead of Alpine (musl): Next.js 16's Turbopack requires
+# native SWC bindings, and npm's musl/glibc detection on Alpine installs the
+# gnu binding while skipping the musl one — the build then dies because the gnu
+# binding cannot load without glibc. glibc also avoids the same class of issues
+# for other native modules (e.g., sharp).
 # =============================================================================
-FROM node:20-alpine AS base
+FROM node:20-slim AS base
 
 # =============================================================================
 # 1. DEPENDENCIES STAGE: Install Application Dependencies
@@ -28,9 +32,6 @@ FROM node:20-alpine AS base
 #    It caches the installation unless package files change.
 # =============================================================================
 FROM base AS deps
-# libc6-compat is required by Alpine Linux for some native Node.js modules
-# (e.g., image optimization libraries like sharp, or SWC compiler).
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package managers' lock files and configuration
