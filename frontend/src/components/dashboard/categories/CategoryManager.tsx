@@ -343,24 +343,22 @@ export default function CategoryManager({ initialCategories, blogInfo }: Categor
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between border-b pb-4">
-        <Button
-          onClick={handleAddCategory}
-          variant="outline"
-          className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
-        >
+      {/* flex-wrap: 모바일에서 버튼 그룹이 줄바꿈되어 카드 밖으로 밀리지 않게 한다 */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+        <Button onClick={handleAddCategory}>
           <Plus size={16} />
           카테고리 추가
         </Button>
         <div className="flex gap-2">
-          <Button variant="ghost" onClick={() => window.location.reload()}>
-            <RotateCcw size={16} className="mr-2" />
-          </Button>
           <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-indigo-600 hover:bg-indigo-700"
+            variant="ghost"
+            size="icon"
+            onClick={() => window.location.reload()}
+            aria-label="변경사항 되돌리기"
           >
+            <RotateCcw size={16} />
+          </Button>
+          <Button onClick={handleSave} disabled={isSaving}>
             <Save size={16} className="mr-2" />
             {isSaving ? '저장 중...' : '변경사항 저장'}
           </Button>
