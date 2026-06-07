@@ -16,23 +16,26 @@ export default function DashboardProfileCard({ blogSlug }: DashboardProfileCardP
   const { data: user } = useUserProfile();
 
   return (
-    <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
-      {/* relative 필수: UserAvatar의 next/image가 fill 모드라 위치 지정 조상을 채운다 */}
-      <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-gray-200">
-        <UserAvatar user={user} size={52} />
+    <div className="flex flex-col text-center">
+      {/* 카드 폭을 가득 채우는 정사각형 프로필 이미지 (티스토리식).
+          relative 필수: UserAvatar의 next/image가 fill 모드라 위치 지정 조상을 채운다 */}
+      <div className="relative aspect-square w-full overflow-hidden">
+        <UserAvatar user={user} size={256} shape="square" />
       </div>
 
-      <p className="max-w-full truncate text-sm font-semibold text-gray-900">{user?.nickname}</p>
+      <div className="space-y-1 px-4 py-4">
+        <p className="truncate text-sm font-semibold text-gray-900">{user?.nickname}</p>
 
-      {blogSlug && (
-        <Link
-          href={`/@${blogSlug}`}
-          target="_blank"
-          className="max-w-full truncate text-xs text-muted-foreground hover:text-primary hover:underline"
-        >
-          contentria.com/@{blogSlug}
-        </Link>
-      )}
+        {blogSlug && (
+          <Link
+            href={`/@${blogSlug}`}
+            target="_blank"
+            className="block truncate text-xs text-muted-foreground hover:text-primary hover:underline"
+          >
+            contentria.com/@{blogSlug}
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
