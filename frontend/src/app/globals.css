@@ -165,8 +165,25 @@ body {
   border: 0;
 } */
 
+/* 인디고-50 상당은 흰 배경과 구분이 약해 한 단계 진하게 (≈ indigo-100) */
 .mdxeditor-toolbar._toolbarRoot_1e2ox_162 {
-  background-color: oklch(96.2% 0.018 272.314);
+  background-color: oklch(93% 0.034 272.314);
+}
+
+/* CodeMirror 라인 넘버: 기본값이 작고 연해 잘 안 보인다 */
+.mdxeditor .cm-gutters {
+  color: #4b5563; /* gray-600 */
+}
+
+/* prose 행간(1.5, tailwind.config) 기준 첫 줄 라인박스는 1.5em인데 체크박스(1rem)가
+   absolute top:0이라 위로 떠 보인다. bullet/number는 ::marker라 자동 정렬되지만
+   체크리스트는 수동 보정이 필요하다. ::after(✓ 표시)도 같은 양만큼 내린다. */
+.mdxeditor.prose :is([class*='_listItemChecked_'], [class*='_listItemUnchecked_'])::before {
+  top: calc((1.5em - 1rem) / 2);
+}
+
+.mdxeditor.prose [class*='_listItemChecked_']::after {
+  top: calc((1.5em - 1rem) / 2 + 0.125rem);
 }
 
 /* MDXEditor 테이블 편집 컨트롤(열/행 ··· 메뉴, 행/열 추가 + 버튼)은 라이브러리
