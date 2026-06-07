@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Search, Home } from 'lucide-react';
+import { Search, SquarePen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import UserAvatar from './header/UserAvatar';
 import ProfileDropdown from './header/ProfileDropdown';
@@ -17,10 +18,15 @@ interface DashboardHeaderProps {
   blogSlug: string | null;
   /** (main) 레이아웃에서만 켜는 모바일 내비 Sheet 트리거 — 에디터/온보딩 헤더엔 없음 */
   showMobileNav?: boolean;
+  /** (main) 레이아웃에서만 켜는 글쓰기 CTA — 에디터/온보딩 헤더엔 없음 */
+  showWriteButton?: boolean;
 }
 
-export default function DashboardHeader({ blogSlug, showMobileNav = false }: DashboardHeaderProps) {
-  const isBlogLinkActive = blogSlug !== null;
+export default function DashboardHeader({
+  blogSlug,
+  showMobileNav = false,
+  showWriteButton = false,
+}: DashboardHeaderProps) {
   const { data: user } = useUserProfile();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -94,15 +100,16 @@ export default function DashboardHeader({ blogSlug, showMobileNav = false }: Das
 
         {/* 오른쪽 영역: 버튼 및 프로필 */}
         <div className="flex items-center space-x-2">
-          {/* 블로그로 돌아가기 버튼 */}
-          <Link
-            href={blogSlug ? `/@${blogSlug}` : '/dashboard'}
-            target={isBlogLinkActive ? '_blank' : '_self'}
-            className="mx-2 hidden items-center rounded-lg bg-white px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 md:flex"
-          >
-            <Home size={18} className="mr-2" />
-            블로그로 돌아가기
-          </Link>
+          {/* 주 행동(글쓰기) CTA — 페이지마다 분산돼 있던 새 글 작성 버튼을 헤더로 일원화.
+              에디터(초안 유실 위험)/온보딩(블로그 없음)에서는 숨긴다 */}
+          {showWriteButton && (
+            <Button asChild size="sm" className="mr-1">
+              <Link href="/dashboard/posts/new">
+                <SquarePen className="h-4 w-4" />
+                <span className="hidden sm:inline">글쓰기</span>
+              </Link>
+            </Button>
+          )}
 
           {/* 알림 버튼 */}
           {/* <div className="relative" ref={notificationRef}>

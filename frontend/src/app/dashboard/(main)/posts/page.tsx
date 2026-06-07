@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
 import { getMyBlogAction } from '@/actions/blog';
 import { PATHS } from '@/constants/paths';
 import { notFound, redirect } from 'next/navigation';
@@ -41,16 +39,8 @@ export default async function PostsPage({ searchParams }: PostPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* 헤더 영역 */}
-      <div className="flex flex-col justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
-        <h1 className="text-2xl font-bold text-gray-800">글 관리</h1>
-        <Link
-          href="/dashboard/posts/new"
-          className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700"
-        >
-          <Plus size={18} className="mr-2" />새 글 작성
-        </Link>
-      </div>
+      {/* 헤더 영역 — 글쓰기 CTA는 페이지가 아니라 상단 헤더에 일원화돼 있다 */}
+      <h1 className="text-2xl font-bold text-gray-800">글 관리</h1>
 
       <DataTable columns={columns} data={initialPosts} />
       <div className="border-t border-gray-200 px-4 py-3 sm:px-6">
