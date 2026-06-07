@@ -46,6 +46,7 @@ import { ForwardRefEditor } from '@/components/dashboard/ForwardRefEditor';
 import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
 import CustomImageDialog from '@/components/dashboard/editor/CustomImageDialog';
 import VideoUpload from '@/components/dashboard/editor/VideoUpload';
+import { mdxEditorKoTranslation } from '@/components/dashboard/editor/mdxEditorKoTranslation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -282,6 +283,7 @@ function helloWorld() {
           markdown={markdown}
           onChange={console.log}
           spellCheck={false}
+          translation={mdxEditorKoTranslation}
           className="prose max-w-none flex-1"
           plugins={[
             headingsPlugin({ allowedHeadingLevels: [1, 2, 3] }),
