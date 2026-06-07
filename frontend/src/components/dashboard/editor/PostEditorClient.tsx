@@ -46,6 +46,7 @@ import { ForwardRefEditor } from '@/components/dashboard/ForwardRefEditor';
 import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
 import CustomImageDialog from '@/components/dashboard/editor/CustomImageDialog';
 import VideoUpload from '@/components/dashboard/editor/VideoUpload';
+import { codeFenceOnEnterPlugin } from '@/components/dashboard/editor/codeFenceOnEnterPlugin';
 import { mdxEditorKoTranslation } from '@/components/dashboard/editor/mdxEditorKoTranslation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -299,7 +300,6 @@ function helloWorld() {
               },
               ImageDialog: CustomImageDialog,
             }),
-            markdownShortcutPlugin(),
             // the default code block language to insert when user clicks the "insert code block" button
             codeBlockPlugin({
               defaultCodeBlockLanguage: 'js',
@@ -391,7 +391,9 @@ function helloWorld() {
             }),
             directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
             frontmatterPlugin(),
+            // 모든 플러그인이 등록된 뒤에 와야 활성 플러그인 기준으로 변환기가 구성된다
             markdownShortcutPlugin(),
+            codeFenceOnEnterPlugin(),
           ]}
         />
       </div>
