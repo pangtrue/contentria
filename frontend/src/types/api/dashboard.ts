@@ -1,8 +1,9 @@
 export interface StatsResponse {
   todayVisitors: number;
-  todayVisitorsGrowthRate: number | null;
+  yesterdayVisitors: number;
+  totalVisitors: number;
   todayViews: number;
-  todayViewsGrowthRate: number | null;
+  yesterdayViews: number;
   totalViews: number;
   totalPosts: number;
 }

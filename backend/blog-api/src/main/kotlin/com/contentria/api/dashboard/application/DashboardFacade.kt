@@ -35,9 +35,10 @@ class DashboardFacade(
 
         return DashboardStatsInfo(
             todayVisitors = visitStats.todayVisitors,
-            todayVisitorsGrowthRate = visitStats.todayVisitorsGrowthRate,
+            yesterdayVisitors = visitStats.yesterdayVisitors,
+            totalVisitors = visitStats.totalVisitors,
             todayViews = visitStats.todayViews,
-            todayViewsGrowthRate = visitStats.todayViewsGrowthRate,
+            yesterdayViews = visitStats.yesterdayViews,
             totalViews = visitStats.totalViews,
             totalPosts = totalPosts,
         )

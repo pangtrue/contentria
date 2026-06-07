@@ -20,6 +20,8 @@ interface DailyStatisticsRepository {
 
     fun sumTotalViews(blogId: UUID): Long?
 
+    fun sumTotalVisitors(blogId: UUID): Long?
+
     fun findTrafficData(blogId: UUID, startDate: LocalDate, endDate: LocalDate): List<DailyStatistics>
 
     /** 히스토리(daily_statistics, startDate..endDate) + 오늘 라이브(visit_logs, liveSince 이후) 합산 */

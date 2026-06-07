@@ -4,9 +4,10 @@ import com.contentria.api.dashboard.application.dto.DashboardStatsInfo
 
 data class DashboardStatsResponse(
     val todayVisitors: Long,
-    val todayVisitorsGrowthRate: Double?,
+    val yesterdayVisitors: Long,
+    val totalVisitors: Long,
     val todayViews: Long,
-    val todayViewsGrowthRate: Double?,
+    val yesterdayViews: Long,
     val totalViews: Long,
     val totalPosts: Long
 ) {
@@ -14,9 +15,10 @@ data class DashboardStatsResponse(
         fun from(dashboardStatsInfo: DashboardStatsInfo): DashboardStatsResponse {
             return DashboardStatsResponse(
                 todayVisitors = dashboardStatsInfo.todayVisitors,
-                todayVisitorsGrowthRate = dashboardStatsInfo.todayVisitorsGrowthRate,
+                yesterdayVisitors = dashboardStatsInfo.yesterdayVisitors,
+                totalVisitors = dashboardStatsInfo.totalVisitors,
                 todayViews = dashboardStatsInfo.todayViews,
-                todayViewsGrowthRate = dashboardStatsInfo.todayViewsGrowthRate,
+                yesterdayViews = dashboardStatsInfo.yesterdayViews,
                 totalViews = dashboardStatsInfo.totalViews,
                 totalPosts = dashboardStatsInfo.totalPosts
             )

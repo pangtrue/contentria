@@ -6,12 +6,11 @@ import {
   useTrafficChartQuery,
 } from '@/hooks/queries/useDashboardQueries';
 import PopularPostList from './PopularPostList';
-import { Eye, FileText, Loader2, MessageSquare } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import TrafficChart, { TRAFFIC_SERIES } from './TrafficChart';
-import StatCard from './StatCard';
+import StatGroupCard from './StatGroupCard';
 import { User } from '@/types/api/user';
 import { BlogInfo } from '@/types/api/blogs';
-import { formatTrend } from '@/lib/utils';
 
 interface DashboardContentProps {
   user: User | null;
@@ -29,9 +28,6 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
     '30days'
   );
 
-  const todayTrend = formatTrend(stats?.todayVisitorsGrowthRate);
-  const todayViewsTrend = formatTrend(stats?.todayViewsGrowthRate);
-
   return (
     <div className="space-y-6">
       {/* 환영 헤더 — 글쓰기 CTA는 페이지가 아니라 상단 헤더에 일원화돼 있다 */}
@@ -42,38 +38,24 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
         </p>
       </div>
 
-      {/* 통계 카드 */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <>
-          <StatCard
-            icon={<FileText size={24} />}
-            title="오늘 방문자"
-            value={stats?.todayVisitors ?? 0}
-            trend={todayTrend.text}
-            trendUp={todayTrend.isUp}
-          />
-          <StatCard
-            icon={<FileText size={24} />}
-            title="오늘 조회수"
-            value={stats?.todayViews ?? 0}
-            trend={todayViewsTrend.text}
-            trendUp={todayViewsTrend.isUp}
-          />
-          <StatCard
-            icon={<Eye size={24} />}
-            title="전체 조회수"
-            value={stats?.totalViews ?? 0}
-            trend=""
-            trendUp={true}
-          />
-          <StatCard
-            icon={<MessageSquare size={24} />}
-            title="전체 게시글 수"
-            value={stats?.totalPosts ?? 0}
-            trend=""
-            trendUp={true}
-          />
-        </>
+      {/* 통계: 조회수/방문자 그룹 카드 — 각 카드에 오늘·어제·누적 3열 (티스토리식) */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <StatGroupCard
+          title="조회수"
+          items={[
+            { label: '오늘', value: stats?.todayViews ?? 0 },
+            { label: '어제', value: stats?.yesterdayViews ?? 0 },
+            { label: '누적', value: stats?.totalViews ?? 0 },
+          ]}
+        />
+        <StatGroupCard
+          title="방문자"
+          items={[
+            { label: '오늘', value: stats?.todayVisitors ?? 0 },
+            { label: '어제', value: stats?.yesterdayVisitors ?? 0 },
+            { label: '누적', value: stats?.totalVisitors ?? 0 },
+          ]}
+        />
       </div>
 
       {/* 트래픽 차트 — 전체 폭 */}
