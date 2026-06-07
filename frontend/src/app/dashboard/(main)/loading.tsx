@@ -3,11 +3,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 /**
  * (main) 대시보드 공통 로딩 스켈레톤.
  * 메뉴 전환 시 서버 컴포넌트가 데이터를 가져오는 동안 헤더/사이드바(레이아웃)는
- * 그대로 두고 콘텐츠 영역에만 즉시 표시되어 "처리 중" 피드백을 준다.
+ * 그대로 두고 콘텐츠 영역에 표시되어 "처리 중" 피드백을 준다.
+ * delayed-loading: 빠른 전환에서는 스켈레톤이 보이기 전에 실제 화면이 도착하므로
+ * 깜빡임 없이 지나가고, ~200ms 이상 걸리는 전환에서만 페이드인된다.
  */
 export default function DashboardMainLoading() {
   return (
-    <div className="space-y-6">
+    <div className="delayed-loading space-y-6">
       {/* 페이지 제목 + 설명 */}
       <div className="space-y-2">
         <Skeleton className="h-8 w-44" />

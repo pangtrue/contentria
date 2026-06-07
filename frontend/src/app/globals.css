@@ -27,6 +27,21 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* 로딩 UI(스켈레톤)를 ~200ms 뒤에 나타나게 한다 — 빠른 전환에서는 스켈레톤이
+     보이기 전에 실제 화면이 도착해 깜빡임이 없고, 느린 전환에서만 부드럽게
+     페이드인된다. (인지 임계값: ~100ms는 '즉시'로 느껴지므로 그보다 짧은 대기에
+     로딩 표시를 띄우면 피드백이 아니라 소음이 된다) */
+  .delayed-loading {
+    opacity: 0;
+    animation: delayed-loading-fade-in 0.3s ease 0.2s forwards;
+  }
+}
+
+@keyframes delayed-loading-fade-in {
+  to {
+    opacity: 1;
+  }
 }
 
 /* 웨이브 애니메이션 Keyframes: 점프 후 복귀 및 색상 변경 */

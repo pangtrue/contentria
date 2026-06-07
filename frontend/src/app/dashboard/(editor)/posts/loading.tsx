@@ -2,8 +2,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function EditorLoading() {
   return (
-    // PostEditorClient와 동일한 최상위 컨테이너 스타일 적용
-    <div className="mx-auto flex w-full max-w-6xl flex-1 animate-pulse flex-col p-4 md:p-8">
+    // PostEditorClient와 동일한 최상위 컨테이너 스타일 적용.
+    // delayed-loading: 빠른 전환에서는 스켈레톤 플래시 없이 지나간다.
+    <div className="delayed-loading mx-auto flex w-full max-w-6xl flex-1 animate-pulse flex-col p-4 md:p-8">
       {/* 1. 카테고리 선택 영역 (Select 박스) */}
       <div className="mb-4 flex items-center space-x-4">
         {/* w-full md:w-60 크기에 맞춘 스켈레톤 */}
