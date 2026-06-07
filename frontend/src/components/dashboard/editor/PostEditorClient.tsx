@@ -45,6 +45,7 @@ import {
 import { ForwardRefEditor } from '@/components/dashboard/ForwardRefEditor';
 import CustomInsertImage from '@/components/dashboard/editor/CustomInsertImage';
 import CustomImageDialog from '@/components/dashboard/editor/CustomImageDialog';
+import { editorSyntaxHighlighting } from '@/components/dashboard/editor/editorCodeHighlight';
 import VideoUpload from '@/components/dashboard/editor/VideoUpload';
 import { codeFenceOnEnterPlugin } from '@/components/dashboard/editor/codeFenceOnEnterPlugin';
 import { mdxEditorKoTranslation } from '@/components/dashboard/editor/mdxEditorKoTranslation';
@@ -317,6 +318,8 @@ function helloWorld() {
                 kotlin: 'Kotlin',
                 bash: 'Bash',
               },
+              // 기본 라이트 하이라이트는 대비가 낮아 GitHub Light 계열 팔레트로 교체
+              codeMirrorExtensions: [editorSyntaxHighlighting],
             }),
             // the viewMode parameter lets you switch the editor to diff or source mode.
             // you can get the diffMarkdown from your backend and pass it here.
