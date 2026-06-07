@@ -240,10 +240,15 @@ body {
   padding-right: 2rem;
 }
 
+/* 표 폭은 셀 내용 기준(auto)으로 잡는다 — 라이브러리 기본(table-layout: fixed +
+   width: 100%)은 내용과 무관하게 전체 폭을 균등 분할해 버린다. 왼쪽은 도구 컬럼
+   폭만큼 당겨 본문과 정렬을 유지하고, 오른쪽은 내용이 끝나는 곳까지만. */
 .mdxeditor.prose [class*='_tableEditor_'] {
-  width: calc(100% + 4rem);
+  table-layout: auto;
+  width: auto;
+  max-width: calc(100% + 4rem);
   margin-left: -2rem;
-  margin-right: -2rem;
+  margin-right: 0;
 }
 
 /* rehypeAutolinkHeadings(behavior: 'wrap') wraps heading text in <a>.
