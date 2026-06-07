@@ -18,13 +18,11 @@ import {
   DirectiveNode,
   directivesPlugin,
   EditorInFocus,
-  frontmatterPlugin,
   headingsPlugin,
   HighlightToggle,
   imagePlugin,
   InsertAdmonition,
   InsertCodeBlock,
-  InsertFrontmatter,
   InsertTable,
   InsertThematicBreak,
   linkDialogPlugin,
@@ -382,8 +380,6 @@ function helloWorld() {
                                 },
                               ]}
                             />
-                            <Separator />
-                            <InsertFrontmatter />
                           </>
                         ),
                       },
@@ -393,7 +389,6 @@ function helloWorld() {
               ),
             }),
             directivesPlugin({ directiveDescriptors: [AdmonitionDirectiveDescriptor] }),
-            frontmatterPlugin(),
             // 모든 플러그인이 등록된 뒤에 와야 활성 플러그인 기준으로 변환기가 구성된다
             markdownShortcutPlugin(),
             codeFenceOnEnterPlugin(),
