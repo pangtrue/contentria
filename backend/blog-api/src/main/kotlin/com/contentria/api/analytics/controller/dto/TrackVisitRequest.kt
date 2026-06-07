@@ -8,13 +8,14 @@ data class TrackVisitRequest(
     val postId: UUID?,
     val refererUrl: String?
 ) {
-    fun toCommand(clientIp: String?, userAgent: String?): LogVisitCommand {
+    fun toCommand(clientIp: String?, userAgent: String?, viewerId: UUID?): LogVisitCommand {
         return LogVisitCommand(
             blogId = this.blogId,
             postId = this.postId,
             visitorIp = clientIp,
             userAgent = userAgent,
-            refererUrl = this.refererUrl
+            refererUrl = this.refererUrl,
+            viewerId = viewerId
         )
     }
 }
