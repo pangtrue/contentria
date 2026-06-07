@@ -24,18 +24,20 @@ class AnalyticsService(
     fun getVisitStats(blogId: UUID): VisitStatsInfo {
         val (todayVisitors, todayViews) = fetchTodayMetrics(blogId)
         val (yesterdayVisitors, yesterdayViews) = fetchYesterdayMetrics(blogId)
-        val historyTotalViews = dailyStatisticsRepository.sumTotalViews(blogId)
-        val totalViews = calculator.calculateTotalViews(historyTotalViews, todayViews)
 
-        val todayVisitorsGrowthRate = calculator.calculateGrowthRate(todayVisitors, yesterdayVisitors)
-        val todayViewsGrowthRate = calculator.calculateGrowthRate(todayViews, yesterdayViews)
+        // 누적 = 배치 집계분(어제까지) + 오늘 라이브
+        val totalViews = calculator.calculateTotalViews(
+            dailyStatisticsRepository.sumTotalViews(blogId), todayViews
+        )
+        val totalVisitors = calculator.calculateTotalViews(
+            dailyStatisticsRepository.sumTotalVisitors(blogId), todayVisitors
+        )
 
         return VisitStatsInfo(
             todayVisitors = todayVisitors,
-            todayViews = todayViews,
-            todayVisitorsGrowthRate = todayVisitorsGrowthRate,
-            todayViewsGrowthRate = todayViewsGrowthRate,
             yesterdayVisitors = yesterdayVisitors,
+            totalVisitors = totalVisitors,
+            todayViews = todayViews,
             yesterdayViews = yesterdayViews,
             totalViews = totalViews
         )
