@@ -40,21 +40,28 @@ export default function HeroSection() {
       <div className="container mx-auto max-w-4xl px-6">
         <h1
           ref={h1Ref}
-          className="mb-6 break-keep text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl"
+          className="relative mb-6 break-keep text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl"
         >
-          <MemoizedTypeAnimation
-            sequence={[
-              1000,
-              '당신의 이야기를 세상에 펼쳐보세요.',
-              (el) => triggerWaveAnimation(el),
-              5000,
-            ]}
-            wrapper="span"
-            cursor={true}
-            repeat={0}
-            speed={20}
-            className="inline-block"
-          />
+          {/* 완성 문장을 투명하게 미리 깔아 최종 높이(줄 수)를 예약한다 — 타이핑 중
+              줄이 늘어나며 아래 콘텐츠가 밀리는 레이아웃 시프트를 모든 해상도에서 제거 */}
+          <span aria-hidden className="invisible">
+            당신의 이야기를 세상에 펼쳐보세요.
+          </span>
+          <span className="absolute inset-0">
+            <MemoizedTypeAnimation
+              sequence={[
+                1000,
+                '당신의 이야기를 세상에 펼쳐보세요.',
+                (el) => triggerWaveAnimation(el),
+                5000,
+              ]}
+              wrapper="span"
+              cursor={true}
+              repeat={0}
+              speed={20}
+              className="inline-block"
+            />
+          </span>
         </h1>
         <p className="mb-10 text-lg text-gray-600 md:text-xl">
           당신의 이야기가 곧 당신의 브랜드가 됩니다.

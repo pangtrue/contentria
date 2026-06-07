@@ -2,6 +2,7 @@ package com.contentria.api.post.domain
 
 import com.contentria.api.post.domain.query.CategoryPostCount
 import com.contentria.api.post.domain.query.PostSummary
+import com.contentria.api.post.domain.query.RecentPublishedPost
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.util.*
@@ -18,6 +19,9 @@ interface PostRepository {
     fun findPostCountsByBlog(blogId: UUID): List<CategoryPostCount>
 
     fun findPostSummaries(blogSlug: String, categoryIds: List<UUID>?, statuses: Set<PostStatus>, pageable: Pageable): Page<PostSummary>
+
+    /** 홈 화면용: 전체 블로그의 최신 공개 글 */
+    fun findRecentPublished(limit: Int): List<RecentPublishedPost>
 
     fun findPublishedPost(blogSlug: String, postSlug: String): Post?
 

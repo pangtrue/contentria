@@ -8,6 +8,7 @@ import {
   PostDetailResponse,
   PostStatus,
   PostSummary,
+  RecentPostResponse,
   UpdatePostRequest,
   UpdatePostResponse,
 } from '@/types/api/posts';
@@ -98,4 +99,26 @@ export async function deletePostAction(postId: string): Promise<void> {
   });
 
   revalidatePath('/dashboard/posts');
+}
+
+/**
+ * 홈 "최근 발행된 글" — 전체 블로그의 최신 공개 글.
+ * apiServer는 cookies()를 읽어 라우트를 동적으로 만들기 때문에 쓰지 않는다 —
+ * 공개 데이터라 쿠키가 필요 없고, ISR(5분 재검증)로 홈의 정적 렌더링을 유지한다.
+ * 실패해도 홈이 죽지 않게 빈 배열로 폴백.
+ */
+export async function getRecentPostsAction(size = 6): Promise<RecentPostResponse[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+  try {
+    const response = await fetch(`${baseUrl}/api/posts/recent?size=${size}`, {
+      next: { revalidate: 300 },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return (await response.json()) as RecentPostResponse[];
+  } catch (error) {
+    console.error('Failed to fetch recent posts:', error);
+    return [];
+  }
 }
