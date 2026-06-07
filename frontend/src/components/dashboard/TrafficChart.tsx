@@ -53,18 +53,13 @@ const DayTick = ({ x, y, index, payload }: DayTickProps) => {
 };
 
 const TrafficChart = ({ data }: { data: TrafficChartResponse[] }) => {
-  // 이틀 간격으로 틱을 두되, 월 라벨이 걸리는 매월 1일은 건너뛰지 않도록 강제 포함
-  const ticks = data
-    .filter((d, i) => i === 0 || i % 2 === 0 || new Date(d.date).getDate() === 1)
-    .map((d) => d.date);
-
   return (
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        {/* 1일 단위 틱 — 좁은 화면에서는 겹칠 수 있으나 일 숫자(1~2자리)라 감수 */}
         <XAxis
           dataKey="date"
-          ticks={ticks}
           interval={0}
           tick={<DayTick />}
           tickLine={false}
