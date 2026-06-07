@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 private val log = KotlinLogging.logger {}
 
@@ -47,6 +48,32 @@ class GlobalExceptionHandler {
             message = errorCode.message,
             path = requestUri,
             code = errorCode.code
+        )
+        return ResponseEntity(errorResponse, errorCode.status)
+    }
+
+    /**
+     * 경로/쿼리 파라미터 타입 변환 실패 (예: {postId} 자리에 UUID가 아닌 문자열).
+     * 클라이언트가 잘못된 주소를 친 것이므로 500/ERROR(스택트레이스)가 아니라
+     * 400/warn 한 줄로 처리한다 — 운영 알림 노이즈 방지.
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+    fun handleTypeMismatchException(
+        e: MethodArgumentTypeMismatchException,
+        request: WebRequest
+    ): ResponseEntity<ErrorResponse> {
+        val requestUri = (request as ServletWebRequest).request.requestURI
+        log.warn { "Type mismatch for parameter '${e.name}' (value=${e.value}) on path $requestUri" }
+
+        val errorCode = ErrorCode.INVALID_INPUT_VALUE
+
+        val errorResponse = ErrorResponse(
+            status = errorCode.status.value(),
+            error = errorCode.status.reasonPhrase,
+            message = errorCode.message,
+            path = requestUri,
+            code = errorCode.code,
+            details = mapOf(e.name to "invalid value: ${e.value}")
         )
         return ResponseEntity(errorResponse, errorCode.status)
     }
