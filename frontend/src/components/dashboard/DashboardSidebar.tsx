@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import DashboardNav from './DashboardNav';
+import DashboardProfileCard from './DashboardProfileCard';
 import { BlogInfo } from '@/types/api/blogs';
 
 interface DashboardSidebarProps {
@@ -7,22 +7,24 @@ interface DashboardSidebarProps {
 }
 
 /**
- * Desktop-only sidebar. On mobile the same nav is served by DashboardMobileNav —
- * a Sheet whose trigger lives inside the header, so there is no longer a fixed
- * overlay button colliding with the header logo.
+ * Desktop-only sidebar: two stacked cards on the gray page background —
+ * a profile card (avatar/nickname/blog address) and the management menu.
+ * On mobile the same composition is served by DashboardMobileNav (header Sheet).
  */
 export default function DashboardSidebar({ blogInfos }: DashboardSidebarProps) {
   const firstBlogSlug = blogInfos && blogInfos.length > 0 ? blogInfos[0].slug : null;
 
   return (
-    <aside className="hidden w-64 bg-white shadow-lg md:block">
-      <div className="flex h-16 items-center border-b px-4">
-        <Link href="/dashboard" className="text-xl font-bold text-primary">
-          블로그 관리
-        </Link>
+    <aside className="hidden w-64 flex-col gap-4 md:flex">
+      {/* overflow-hidden: 정사각 프로필 이미지가 카드 상단 모서리 라운드를 따르게 */}
+      <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
+        <DashboardProfileCard blogSlug={firstBlogSlug} />
       </div>
 
-      <DashboardNav blogSlug={firstBlogSlug} />
+      {/* flex-1: 메뉴 카드가 남은 세로 영역을 가득 채운다 */}
+      <div className="flex-1 rounded-lg border bg-white pb-4 shadow-sm">
+        <DashboardNav blogSlug={firstBlogSlug} />
+      </div>
     </aside>
   );
 }
