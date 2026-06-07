@@ -38,7 +38,7 @@ export default function RecentPostsSection({ posts }: { posts: RecentPostRespons
               </h3>
               <p className="mb-4 line-clamp-2 break-keep text-sm text-gray-600">{post.summary}</p>
               <div className="mt-auto flex items-center justify-between text-xs text-gray-400">
-                <span className="truncate font-medium text-gray-500">{post.blogTitle}</span>
+                <span className="truncate font-medium text-gray-500">{post.authorNickname}</span>
                 <span className="shrink-0">{formatDate(post.publishedAt)}</span>
               </div>
             </Link>
