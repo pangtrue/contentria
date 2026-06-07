@@ -49,6 +49,7 @@ interface DailyStatisticsJpaRepository : JpaRepository<DailyStatistics, UUID> {
             SELECT
                 CAST(s.post_id AS VARCHAR) as postId,
                 p.title as title,
+                p.slug as slug,
                 SUM(s.view_count) as viewCount
             FROM (
                 SELECT d.post_id AS post_id, d.view_count AS view_count
@@ -65,7 +66,7 @@ interface DailyStatisticsJpaRepository : JpaRepository<DailyStatistics, UUID> {
                 GROUP BY v.post_id
             ) s
             JOIN posts p ON s.post_id = p.id
-            GROUP BY s.post_id, p.title
+            GROUP BY s.post_id, p.title, p.slug
             ORDER BY viewCount DESC
         """,
         nativeQuery = true

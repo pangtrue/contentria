@@ -4,10 +4,12 @@ import React from 'react';
 
 interface PopularPostListProps {
   posts: PopularPostResponse[];
+  /** 리더 URL(/@{blogSlug}/{postSlug}) 구성용 */
+  blogSlug: string;
 }
 
-/** 인기 게시글 순위 목록 — 제목만 간결하게, 순위는 일반 번호 표기. */
-export default function PopularPostList({ posts }: PopularPostListProps) {
+/** 인기 게시글 순위 목록 — 제목만 간결하게, 클릭 시 발행된 글을 새 탭으로 연다. */
+export default function PopularPostList({ posts, blogSlug }: PopularPostListProps) {
   if (!posts || posts.length === 0) {
     return (
       <div className="flex h-[200px] items-center justify-center rounded-lg bg-gray-50">
@@ -21,10 +23,11 @@ export default function PopularPostList({ posts }: PopularPostListProps) {
       {posts.map((post, index) => (
         <li key={post.id}>
           <Link
-            href={`/blog/${post.id}`}
+            href={`/@${blogSlug}/${post.slug}`}
+            target="_blank"
             className="flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-gray-50"
           >
-            <span className="w-5 shrink-0 text-right text-sm font-semibold tabular-nums text-gray-400">
+            <span className="w-5 shrink-0 text-right text-sm font-semibold tabular-nums text-primary">
               {index + 1}.
             </span>
             <span className="truncate text-sm text-gray-800">{post.title}</span>

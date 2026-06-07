@@ -111,7 +111,7 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
           <h2 className="text-lg font-semibold">인기 게시글</h2>
           <span className="text-sm text-gray-400">최근 30일 조회수 기준</span>
         </div>
-        <PopularPostList posts={popularPosts || []} />
+        <PopularPostList posts={popularPosts || []} blogSlug={slug!} />
       </div>
     </div>
   );

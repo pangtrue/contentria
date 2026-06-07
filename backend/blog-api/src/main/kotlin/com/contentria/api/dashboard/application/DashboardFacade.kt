@@ -61,6 +61,7 @@ class DashboardFacade(
             PopularPostInfo(
                 id = it.postId,
                 title = it.title,
+                slug = it.slug,
                 views = it.viewCount
             )
         }
