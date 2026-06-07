@@ -8,16 +8,25 @@ import type { Translation } from '@mdxeditor/editor';
  * 사전에 없는 키는 영어 기본값(defaultValue)으로 폴백되므로 라이브러리 업데이트로
  * 키가 추가되어도 빈 라벨이 생기지 않는다.
  */
+/**
+ * MDXEditor의 undo/redo 툴팁과 같은 표기(⌘Z / Ctrl+Z)를 따른다.
+ * SSR 중에는 navigator가 없으므로 가드 — 에디터 자체가 ssr:false라 실제 표기는 항상 클라이언트 기준.
+ */
+const IS_APPLE =
+  typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const mod = (key: string) => (IS_APPLE ? `⌘${key}` : `Ctrl+${key}`);
+
 const KO: Record<string, string> = {
-  // 툴바 — 서식 토글
+  // 툴바 — 서식 토글. 단축키 힌트는 실제 등록된 키에만 붙인다:
+  // ⌘/Ctrl+B·I·U는 lexical 코어, ⌘/Ctrl+K는 MDXEditor link-dialog가 처리.
   'toolbar.undo': '실행 취소 {{shortcut}}',
   'toolbar.redo': '다시 실행 {{shortcut}}',
-  'toolbar.bold': '굵게',
-  'toolbar.removeBold': '굵게 해제',
-  'toolbar.italic': '기울임',
-  'toolbar.removeItalic': '기울임 해제',
-  'toolbar.underline': '밑줄',
-  'toolbar.removeUnderline': '밑줄 해제',
+  'toolbar.bold': `굵게 (${mod('B')})`,
+  'toolbar.removeBold': `굵게 해제 (${mod('B')})`,
+  'toolbar.italic': `기울임 (${mod('I')})`,
+  'toolbar.removeItalic': `기울임 해제 (${mod('I')})`,
+  'toolbar.underline': `밑줄 (${mod('U')})`,
+  'toolbar.removeUnderline': `밑줄 해제 (${mod('U')})`,
   'toolbar.strikethrough': '취소선',
   'toolbar.removeStrikethrough': '취소선 해제',
   'toolbar.superscript': '위 첨자',
@@ -30,7 +39,7 @@ const KO: Record<string, string> = {
   'toolbar.removeInlineCode': '인라인 코드 해제',
 
   // 툴바 — 삽입류
-  'toolbar.link': '링크 삽입',
+  'toolbar.link': `링크 삽입 (${mod('K')})`,
   'toolbar.image': '이미지 삽입',
   'toolbar.table': '테이블 삽입',
   'toolbar.codeBlock': '코드 블록 삽입',
