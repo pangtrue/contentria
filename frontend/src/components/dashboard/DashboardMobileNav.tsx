@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import DashboardNav from './DashboardNav';
+import DashboardProfileCard from './DashboardProfileCard';
 
 interface DashboardMobileNavProps {
   blogSlug: string | null;
@@ -34,9 +35,11 @@ export default function DashboardMobileNav({ blogSlug }: DashboardMobileNavProps
       </SheetTrigger>
 
       <SheetContent side="left" className="w-64 p-0">
-        <SheetHeader className="border-b px-4 py-4 text-left">
-          <SheetTitle className="text-xl font-bold text-primary">블로그 관리</SheetTitle>
+        {/* 시각적 헤더는 프로필 카드가 대신하고, 제목/설명은 스크린 리더용으로만 유지 */}
+        <SheetHeader className="border-b p-0 text-left">
+          <SheetTitle className="sr-only">블로그 관리</SheetTitle>
           <SheetDescription className="sr-only">대시보드 관리 메뉴</SheetDescription>
+          <DashboardProfileCard blogSlug={blogSlug} />
         </SheetHeader>
 
         <DashboardNav blogSlug={blogSlug} onNavigate={() => setOpen(false)} />
