@@ -59,7 +59,7 @@ import {
 import { createNewPostAction, updatePostAction } from '@/actions/post';
 import { uploadImageToR2 } from '@/lib/uploadImage';
 import { PostDetailResponse, PostStatus } from '@/types/api/posts';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { PATHS } from '@/constants/paths';
 import { CategoryResponse } from '@/types/api/category';
@@ -93,6 +93,8 @@ export function PostEditorClient({ blogId, categories, initialData }: PostEditor
   );
   const [videoId, setVideoId] = useState<string | null>(initialData?.video?.videoId ?? null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  // 어느 저장 버튼이 진행 중인지 (해당 버튼에만 스피너 표시)
+  const [pendingAction, setPendingAction] = useState<PostStatus | null>(null);
 
   console.log('initialData', initialData);
   const markdown =
@@ -180,6 +182,7 @@ function helloWorld() {
   const handleSave = useCallback(
     async (postStatus: PostStatus) => {
       setSaveStatus('saving');
+      setPendingAction(postStatus); // 진행 중인 버튼에만 스피너를 띄우기 위한 추적
       const title = titleRef.current?.value ?? '';
       const markdownContent = editorRef.current?.getMarkdown() || '';
       console.log(markdownContent);
@@ -187,6 +190,7 @@ function helloWorld() {
       if (!title.trim() || !selectedCategory || !markdownContent.trim()) {
         alert('제목, 카고리를 선택하고 내용을 입력해주세요.');
         setSaveStatus('idle');
+        setPendingAction(null);
         return;
       }
 
@@ -225,6 +229,7 @@ function helloWorld() {
             : '포스트 저장에 실패했습니다. 다시 시도해주세요.';
         alert(message);
       } finally {
+        setPendingAction(null);
         setTimeout(() => setSaveStatus('idle'), 2000);
       }
 
@@ -408,11 +413,13 @@ function helloWorld() {
             onClick={() => handleSave('DRAFT')}
             disabled={saveStatus === 'saving'}
           >
-            임시 저장
+            {pendingAction === 'DRAFT' && <Loader2 className="h-4 w-4 animate-spin" />}
+            {pendingAction === 'DRAFT' ? '저장 중...' : '임시 저장'}
           </Button>
 
           <Button onClick={() => handleSave('PUBLISHED')} disabled={saveStatus === 'saving'}>
-            출간하기
+            {pendingAction === 'PUBLISHED' && <Loader2 className="h-4 w-4 animate-spin" />}
+            {pendingAction === 'PUBLISHED' ? '출간 중...' : '출간하기'}
           </Button>
         </div>
       </div>
