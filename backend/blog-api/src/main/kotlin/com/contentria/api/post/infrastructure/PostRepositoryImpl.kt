@@ -5,6 +5,7 @@ import com.contentria.api.post.domain.PostRepository
 import com.contentria.api.post.domain.PostStatus
 import com.contentria.api.post.domain.query.CategoryPostCount
 import com.contentria.api.post.domain.query.PostSummary
+import com.contentria.api.post.domain.query.RecentPublishedPost
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -56,6 +57,10 @@ class PostRepositoryImpl(
         val mixedSort = JpaSort.unsafe(Sort.Direction.DESC, "COALESCE(p.publishedAt, p.createdAt)")
         val customPageable = PageRequest.of(pageable.pageNumber, pageable.pageSize, mixedSort)
         return postJpaRepository.findPostSummaries(blogSlug, categoryIds, statuses, customPageable)
+    }
+
+    override fun findRecentPublished(limit: Int): List<RecentPublishedPost> {
+        return postJpaRepository.findRecentPublished(PageRequest.of(0, limit))
     }
 
     override fun findPublishedPost(

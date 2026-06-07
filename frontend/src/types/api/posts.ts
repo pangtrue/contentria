@@ -92,3 +92,13 @@ export interface UpdatePostResponse {
   status: PostStatus;
   categoryName: string | null;
 }
+
+/** 홈 "최근 발행된 글" 항목 (GET /posts/recent) */
+export interface RecentPostResponse {
+  title: string;
+  summary: string;
+  postSlug: string;
+  blogSlug: string;
+  blogTitle: string;
+  publishedAt: string | null;
+}

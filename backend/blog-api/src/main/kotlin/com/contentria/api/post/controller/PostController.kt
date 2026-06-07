@@ -45,6 +45,16 @@ class PostController(
         return ResponseEntity.ok(PostDetailResponse.from(postDetailAndOwnerInfo))
     }
 
+    /** 홈 화면용 공개 엔드포인트 — 전체 블로그의 최신 발행 글 */
+    @ApiLog
+    @GetMapping("/posts/recent")
+    fun getRecentPosts(
+        @RequestParam(defaultValue = "6") size: Int
+    ): ResponseEntity<List<RecentPostResponse>> {
+        val recentPosts = postFacade.getRecentPosts(size.coerceIn(1, 20))
+        return ResponseEntity.ok(recentPosts.map { RecentPostResponse.from(it) })
+    }
+
     @ApiLog
     @GetMapping("/posts/{postId}")
     fun getPostDetail(

@@ -1,5 +1,6 @@
 package com.contentria.api.post.application
 
+import com.contentria.api.post.application.dto.RecentPostInfo
 import com.contentria.api.blog.application.BlogService
 import com.contentria.api.category.application.CategoryService
 import com.contentria.api.media.application.MediaService
@@ -54,6 +55,11 @@ class PostFacade(
     }
 
     @Transactional(readOnly = true)
+    /** 홈 화면 "최근 발행된 글" — 전체 블로그의 최신 공개 글 */
+    fun getRecentPosts(limit: Int): List<RecentPostInfo> {
+        return postService.getRecentPublishedPosts(limit)
+    }
+
     fun getPostDetail(postId: UUID): PostDetailInfo {
         val post = postService.getPublishedPost(postId)
 
