@@ -17,7 +17,8 @@ export default function DashboardProfileCard({ blogSlug }: DashboardProfileCardP
 
   return (
     <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
-      <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-gray-200">
+      {/* relative 필수: UserAvatar의 next/image가 fill 모드라 위치 지정 조상을 채운다 */}
+      <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-gray-200">
         <UserAvatar user={user} size={52} />
       </div>
 
