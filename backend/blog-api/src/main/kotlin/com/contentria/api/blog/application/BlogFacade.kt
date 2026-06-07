@@ -45,7 +45,8 @@ class BlogFacade(
     fun createBlogWithSamples(userId: UUID, request: CreateBlogCommand): BlogInfo {
         val user = userService.getActiveUserInfo(userId)
 
-        val savedBlogInfo = blogService.createBlog(userId, request.slug, user.email)
+        // Blog title is public (/@slug page metadata etc.) — never default it to the email.
+        val savedBlogInfo = blogService.createBlog(userId, request.slug, "${user.nickname}의 블로그")
 
         val createdCategoryIds = categoryService.createSampleCategories(savedBlogInfo.blogId)
         val sampleContents = mapOf(
