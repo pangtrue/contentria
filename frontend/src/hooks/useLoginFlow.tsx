@@ -1,5 +1,6 @@
 'use client';
 
+import { startGoogleLogin } from '@/lib/oauth';
 import { LoginFormData, LoginStep } from '@/components/auth/login/types';
 import { PasswordStepFormData, LoginEmailStepFormData } from '@/lib/schemas/authSchemas';
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -139,15 +140,6 @@ function useLoginFlowLogic() {
 
   async function resendLoginOtpCode() {
     sendOtp({ email: formData.email });
-  }
-
-  function startGoogleLogin() {
-    const baseUrl = process.env.NEXT_PUBLIC_EXTERNAL_API_BASE_URL;
-    if (baseUrl) {
-      window.location.href = `${baseUrl}/api/oauth2/authorization/google`;
-    } else {
-      console.error('API base URL is not configured.');
-    }
   }
 
   return {
