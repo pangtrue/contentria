@@ -5,13 +5,10 @@ import {
   usePopularPostsQuery,
   useTrafficChartQuery,
 } from '@/hooks/queries/useDashboardQueries';
-import Link from 'next/link';
-import { useState } from 'react';
 import PopularPostList from './PopularPostList';
-import { ArrowRight, Eye, FileText, Loader2, MessageSquare } from 'lucide-react';
-import TrafficChart from './TrafficChart';
+import { Eye, FileText, Loader2, MessageSquare } from 'lucide-react';
+import TrafficChart, { TRAFFIC_SERIES } from './TrafficChart';
 import StatCard from './StatCard';
-import { TimeRange } from '@/types/api/dashboard';
 import { User } from '@/types/api/user';
 import { BlogInfo } from '@/types/api/blogs';
 import { formatTrend } from '@/lib/utils';
@@ -22,14 +19,14 @@ interface DashboardContentProps {
 }
 
 export default function DashboardContent({ user, blogInfos }: DashboardContentProps) {
-  const [timeRange, setTimeRange] = useState<TimeRange>('2weeks');
   const slug = blogInfos?.[0]?.slug;
 
   const { data: stats } = useDashboadStatsQuery(slug!);
   const { data: popularPosts } = usePopularPostsQuery(slug!);
+  // 기간 선택 없이 최근 30일 고정
   const { data: trafficChart, isFetching: isTrafficFetching } = useTrafficChartQuery(
     slug!,
-    timeRange
+    '30days'
   );
 
   const todayTrend = formatTrend(stats?.todayVisitorsGrowthRate);
@@ -79,47 +76,42 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
         </>
       </div>
 
-      {/* 콘텐츠 그리드 */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* 트래픽 차트 */}
-        <div className="rounded-lg bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
+      {/* 트래픽 차트 — 전체 폭 */}
+      <div className="rounded-lg bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
             <h2 className="text-lg font-semibold">트래픽 현황</h2>
-            <select
-              className="rounded-md border border-gray-300 px-2 py-1 text-sm"
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-            >
-              <option value="2weeks">지난 2주</option>
-              <option value="30days">지난 30일</option>
-              <option value="90days">지난 90일</option>
-            </select>
+            <span className="text-sm text-gray-400">최근 30일</span>
           </div>
-          {isTrafficFetching ? (
-            <div className="flex h-[250px] items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-            </div>
-          ) : (
-            <TrafficChart data={trafficChart || []} />
-          )}
+          {/* 범례: 차트의 TRAFFIC_SERIES와 같은 색 정의를 공유 */}
+          <div className="flex items-center gap-4">
+            {TRAFFIC_SERIES.map((series) => (
+              <span key={series.key} className="flex items-center gap-1.5 text-sm text-gray-600">
+                <span
+                  className="h-0.5 w-4 rounded-full"
+                  style={{ backgroundColor: series.color }}
+                />
+                {series.name}
+              </span>
+            ))}
+          </div>
         </div>
+        {isTrafficFetching ? (
+          <div className="flex h-[280px] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+          </div>
+        ) : (
+          <TrafficChart data={trafficChart || []} />
+        )}
+      </div>
 
-        {/* 인기 글 */}
-        <div className="rounded-lg bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">인기 게시글</h2>
-            <Link href="/dashboard/posts" className="text-sm text-indigo-600 hover:text-indigo-800">
-              전체보기
-            </Link>
-          </div>
-          <PopularPostList posts={popularPosts || []} />
-          <Link
-            href="/dashboard/posts"
-            className="mt-4 flex items-center justify-center text-sm text-indigo-600 hover:text-indigo-800"
-          >
-            모든 게시글 보기 <ArrowRight size={16} className="ml-1" />
-          </Link>
+      {/* 인기 글 — 다음 행. 글 관리로 가는 링크는 사이드바 메뉴가 담당하므로 두지 않는다 */}
+      <div className="rounded-lg bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-baseline gap-2">
+          <h2 className="text-lg font-semibold">인기 게시글</h2>
+          <span className="text-sm text-gray-400">최근 30일 조회수 기준</span>
         </div>
+        <PopularPostList posts={popularPosts || []} />
       </div>
     </div>
   );
