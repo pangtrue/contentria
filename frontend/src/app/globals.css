@@ -214,6 +214,22 @@ body {
   opacity: 1;
 }
 
+/* prose(tailwind typography)는 thead/tbody tr/tfoot에 행 전체 폭의 가로 구분선을
+   긋는데, 이 선이 도구 컬럼(왼쪽 행 ···, 오른쪽 열 추가 +) 아래까지 이어져
+   도구 영역이 테이블의 빈 컬럼처럼 보인다. 콘텐츠 셀은 라이브러리가 셀 단위
+   보더(td/th:not(tool-cell))를 그리므로 행 단위 선은 제거해도 표는 유지된다. */
+.mdxeditor.prose [class*='_tableEditor_'] > thead,
+.mdxeditor.prose [class*='_tableEditor_'] > tbody > tr,
+.mdxeditor.prose [class*='_tableEditor_'] > tfoot {
+  border: 0;
+}
+
+/* 도구 셀 자체도 보더 없이 컨트롤 폭만 차지하게 한다 (prose의 th/td 패딩 무효화) */
+.mdxeditor.prose [class*='_tableEditor_'] [data-tool-cell] {
+  border: 0;
+  padding: 1px;
+}
+
 /* rehypeAutolinkHeadings(behavior: 'wrap') wraps heading text in <a>.
    prose-indigo would render that as purple, underlined, weight 500 — making
    headings look like links. Strip link styling inside headings; keep hover
