@@ -34,4 +34,10 @@ class Blog(
     fun isOwner(userId: UUID): Boolean {
         return this.userId == userId
     }
+
+    /** 블로그 공개 정보(제목/설명) 수정 — slug는 URL 정체성이라 변경 대상이 아니다 */
+    fun updateSettings(title: String, description: String?) {
+        this.title = title
+        this.description = description
+    }
 }

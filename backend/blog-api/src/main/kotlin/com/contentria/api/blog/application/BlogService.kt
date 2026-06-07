@@ -54,6 +54,20 @@ class BlogService(
         return BlogInfo.from(savedBlog)
     }
 
+    /** 블로그 제목/설명 수정 — 소유자만 가능. slug는 URL 정체성이라 변경 대상이 아니다. */
+    @Transactional
+    fun updateBlogSettings(userId: UUID, blogSlug: String, title: String, description: String?): BlogInfo {
+        val blog = blogRepository.findBySlug(blogSlug)
+            ?: throw ContentriaException(ErrorCode.NOT_FOUND_BLOG)
+
+        if (!blog.isOwner(userId)) {
+            throw ContentriaException(ErrorCode.FORBIDDEN_ACCESS_BLOG)
+        }
+
+        blog.updateSettings(title = title, description = description)
+        return BlogInfo.from(blog)
+    }
+
     @Transactional(readOnly = true)
     fun validateBlogOwner(blogId: UUID, userId: UUID) {
         val blog = blogRepository.findById(blogId)
