@@ -75,6 +75,10 @@ const config: Config = {
             'h1, h2, h3, h4, h5, h6': {
               letterSpacing: '-0.02em',
             },
+            // 기본 마커가 너무 연하다 (bullets gray-300, counters gray-500).
+            // 본문보다는 연하되 또렷이 보이는 단계로 — 에디터/리더 공통 적용.
+            '--tw-prose-bullets': theme('colors.gray.500'),
+            '--tw-prose-counters': theme('colors.gray.600'),
           },
         },
         // prose-lg sets its own lineHeight (~1.78) per element; override
