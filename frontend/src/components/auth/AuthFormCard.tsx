@@ -22,8 +22,9 @@ export default function AuthFormCard({ title, children }: AuthFormCardProps) {
 
       <h2 className="mb-8 text-center text-3xl font-extrabold text-gray-900">{title}</h2>
 
-      <Card className="w-full border-transparent bg-transparent shadow-none sm:border-gray-200 sm:bg-white sm:shadow-md">
-        <CardContent className="p-0 sm:p-8">{children}</CardContent>
+      {/* 모바일에서도 데스크톱과 동일하게 카드로 감싼다 (이전엔 sm 미만에서 투명 처리) */}
+      <Card className="w-full border-gray-200 bg-white shadow-md">
+        <CardContent className="p-6 sm:p-8">{children}</CardContent>
       </Card>
     </div>
 
