@@ -4,6 +4,7 @@ import com.contentria.common.domain.analytics.DailyStatistics
 import com.contentria.common.domain.analytics.PopularPostStatProjection
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.UUID
 
 interface DailyStatisticsRepository {
@@ -21,7 +22,14 @@ interface DailyStatisticsRepository {
 
     fun findTrafficData(blogId: UUID, startDate: LocalDate, endDate: LocalDate): List<DailyStatistics>
 
-    fun findPopularPosts(blogId: UUID, startDate: LocalDate, endDate: LocalDate, pageable: Pageable): List<PopularPostStatProjection>
+    /** 히스토리(daily_statistics, startDate..endDate) + 오늘 라이브(visit_logs, liveSince 이후) 합산 */
+    fun findPopularPosts(
+        blogId: UUID,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        liveSince: ZonedDateTime,
+        pageable: Pageable
+    ): List<PopularPostStatProjection>
 
     fun findByBlogIdAndStatDateAndPostIdIsNull(blogId: UUID, statDate: LocalDate): DailyStatistics?
 }

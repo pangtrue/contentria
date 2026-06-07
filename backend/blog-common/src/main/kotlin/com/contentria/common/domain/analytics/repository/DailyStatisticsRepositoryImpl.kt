@@ -5,6 +5,7 @@ import com.contentria.common.domain.analytics.PopularPostStatProjection
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.UUID
 
 @Repository
@@ -60,9 +61,10 @@ class DailyStatisticsRepositoryImpl(
         blogId: UUID,
         startDate: LocalDate,
         endDate: LocalDate,
+        liveSince: ZonedDateTime,
         pageable: Pageable
     ): List<PopularPostStatProjection> {
-        return dailyStatisticsJpaRepository.findPopularPosts(blogId, startDate, endDate, pageable)
+        return dailyStatisticsJpaRepository.findPopularPosts(blogId, startDate, endDate, liveSince, pageable)
     }
 
     override fun findByBlogIdAndStatDateAndPostIdIsNull(

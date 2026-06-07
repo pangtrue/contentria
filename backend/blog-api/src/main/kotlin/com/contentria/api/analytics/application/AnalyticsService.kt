@@ -65,7 +65,18 @@ class AnalyticsService(
     ): List<PopularPostStatInfo> {
         val pageable = PageRequest.of(0, limit)
 
-        return dailyStatisticsRepository.findPopularPosts(blogId, startDate, endDate, pageable)
+        val zoneId = ZoneId.of("Asia/Seoul")
+        val today = LocalDate.now(zoneId)
+        val isTodayIncluded = !today.isBefore(startDate) && !today.isAfter(endDate)
+
+        // 오늘은 daily_statistics에 아직 없으므로 visit_logs 라이브 카운트를 합산한다.
+        // 히스토리 범위는 어제까지로 제한해 (수동 배치 등으로) 오늘 행이 이미 있어도
+        // 중복 집계되지 않게 한다. 범위에 오늘이 없으면 라이브 분기는 0건이 되도록
+        // 내일 0시를 기준으로 보낸다.
+        val historyEnd = minOf(endDate, today.minusDays(1))
+        val liveSince = (if (isTodayIncluded) today else today.plusDays(1)).atStartOfDay(zoneId)
+
+        return dailyStatisticsRepository.findPopularPosts(blogId, startDate, historyEnd, liveSince, pageable)
             .map {
                 PopularPostStatInfo(
                     postId = it.getPostId(),
