@@ -4,13 +4,15 @@ import com.contentria.api.dashboard.application.dto.VisitorTrendChartInfo
 
 data class TrafficChartResponse(
     val date: String,
-    val visitors: Long
+    val visitors: Long,
+    val views: Long
 ) {
     companion object {
         fun from(visitorTrendChartInfo: VisitorTrendChartInfo): TrafficChartResponse {
             return TrafficChartResponse(
                 date = visitorTrendChartInfo.date,
-                visitors = visitorTrendChartInfo.visitors
+                visitors = visitorTrendChartInfo.visitors,
+                views = visitorTrendChartInfo.views
             )
         }
     }

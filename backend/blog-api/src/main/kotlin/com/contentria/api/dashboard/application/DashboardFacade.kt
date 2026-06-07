@@ -74,7 +74,8 @@ class DashboardFacade(
 
         val (startDate, formatter) = when (timeRange) {
             TimeRange.TWO_WEEKS -> today.minusDays(13) to DateTimeFormatter.ofPattern("MM/dd")
-            TimeRange.THIRTY_DAYS -> today.minusDays(29) to DateTimeFormatter.ofPattern("MM/dd")
+            // ISO date so the client can derive day/month for the chart axis itself.
+            TimeRange.THIRTY_DAYS -> today.minusDays(29) to DateTimeFormatter.ISO_LOCAL_DATE
             TimeRange.NINETY_DAYS -> today.minusMonths(3) to DateTimeFormatter.ofPattern("yyyy/MM")
         }
 
@@ -88,7 +89,8 @@ class DashboardFacade(
         return trendSeries.map {
             VisitorTrendChartInfo(
                 date = it.date,
-                visitors = it.count
+                visitors = it.visitors,
+                views = it.views
             )
         }
     }
