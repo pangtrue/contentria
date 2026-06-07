@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="grid h-screen grid-rows-[auto_1fr_auto] bg-gray-50">
-      <DashboardHeader blogSlug={firstBlogSlug} showMobileNav />
+      <DashboardHeader blogSlug={firstBlogSlug} showMobileNav showWriteButton />
 
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 p-4 md:grid-cols-[auto_1fr]">
         <DashboardSidebar blogInfos={blogInfos} />

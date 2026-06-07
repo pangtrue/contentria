@@ -37,20 +37,12 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
 
   return (
     <div className="space-y-6">
-      {/* 환영 헤더 */}
-      <div className="mb-6 flex flex-col justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">대시보드</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            안녕하세요, {user?.nickname || '관리자'}님! 오늘의 블로그 현황입니다.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/posts/new"
-          className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700"
-        >
-          새 글 작성
-        </Link>
+      {/* 환영 헤더 — 글쓰기 CTA는 페이지가 아니라 상단 헤더에 일원화돼 있다 */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">블로그관리 홈</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          안녕하세요, {user?.nickname || '관리자'}님! 오늘의 블로그 현황입니다.
+        </p>
       </div>
 
       {/* 통계 카드 */}
