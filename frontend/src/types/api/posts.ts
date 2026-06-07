@@ -99,6 +99,6 @@ export interface RecentPostResponse {
   summary: string;
   postSlug: string;
   blogSlug: string;
-  blogTitle: string;
+  authorNickname: string;
   publishedAt: string | null;
 }

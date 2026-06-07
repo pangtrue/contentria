@@ -76,11 +76,12 @@ interface PostJpaRepository : JpaRepository<Post, UUID> {
             END,
             p.slug,
             b.slug,
-            b.title,
+            u.nickname,
             p.publishedAt
         )
         FROM Post p
         JOIN Blog b ON p.blogId = b.id
+        JOIN User u ON p.authorId = u.id
         WHERE p.status = com.contentria.api.post.domain.PostStatus.PUBLISHED
         ORDER BY p.publishedAt DESC
     """)

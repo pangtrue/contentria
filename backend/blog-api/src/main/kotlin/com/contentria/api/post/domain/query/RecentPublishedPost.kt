@@ -10,6 +10,6 @@ data class RecentPublishedPost(
     val summary: String,
     val postSlug: String,
     val blogSlug: String,
-    val blogTitle: String,
+    val authorNickname: String,
     val publishedAt: ZonedDateTime?
 )
