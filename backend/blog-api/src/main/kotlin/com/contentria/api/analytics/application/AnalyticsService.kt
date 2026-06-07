@@ -81,6 +81,7 @@ class AnalyticsService(
                 PopularPostStatInfo(
                     postId = it.getPostId(),
                     title = it.getTitle(),
+                    slug = it.getSlug(),
                     viewCount = it.getViewCount()
                 )
             }
