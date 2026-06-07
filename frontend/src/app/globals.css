@@ -169,6 +169,51 @@ body {
   background-color: oklch(96.2% 0.018 272.314);
 }
 
+/* MDXEditor 테이블 편집 컨트롤(열/행 ··· 메뉴, 행/열 추가 + 버튼)은 라이브러리
+   기본값이 평상시 opacity 0.15라 표 주변에 항상 비쳐 보인다. Notion처럼 표에
+   hover했을 때만 드러나도록 조정한다.
+   - 클래스 해시(_1e2ox 등)는 버전마다 바뀌므로 접두사 매칭([class*=])으로 대응.
+   - .mdxeditor.prose 앵커로 라이브러리 규칙보다 명시도를 높여 CSS 로드 순서와
+     무관하게 결정적으로 적용된다. */
+.mdxeditor.prose
+  [class*='_tableEditor_']
+  :is(
+    [class*='_tableColumnEditorTrigger_'],
+    [class*='_tableRowEditorTrigger_'],
+    [class*='_addRowButton_'],
+    [class*='_addColumnButton_'],
+    [class*='_iconButton_']
+  ) {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mdxeditor.prose
+  [class*='_tableEditor_']:hover
+  :is(
+    [class*='_tableColumnEditorTrigger_'],
+    [class*='_tableRowEditorTrigger_'],
+    [class*='_addRowButton_'],
+    [class*='_addColumnButton_'],
+    [class*='_iconButton_']
+  ) {
+  opacity: 0.4;
+}
+
+/* 컨트롤 자체에 hover/키보드 포커스 중이거나 메뉴(popover)가 열려 있으면 완전 표시.
+   (마지막에 선언해 같은 명시도의 위 hover 규칙을 이긴다) */
+.mdxeditor.prose
+  [class*='_tableEditor_']
+  :is(
+    [class*='_tableColumnEditorTrigger_'],
+    [class*='_tableRowEditorTrigger_'],
+    [class*='_addRowButton_'],
+    [class*='_addColumnButton_'],
+    [class*='_iconButton_']
+  ):is(:hover, :focus-visible, [data-state='open']) {
+  opacity: 1;
+}
+
 /* rehypeAutolinkHeadings(behavior: 'wrap') wraps heading text in <a>.
    prose-indigo would render that as purple, underlined, weight 500 — making
    headings look like links. Strip link styling inside headings; keep hover
