@@ -186,6 +186,12 @@ body {
   top: calc((1.5em - 1rem) / 2 + 0.125rem);
 }
 
+/* 코드 블록 문자는 본문보다 작게 — 리더(prose pre 0.875em)와 동일한 위계.
+   CodeMirror 자체 행간(1.4)과 결합되어 본문(1.5)보다 좁은 행간이 된다. */
+.mdxeditor .cm-content {
+  font-size: 0.875em;
+}
+
 /* MDXEditor 테이블 편집 컨트롤(열/행 ··· 메뉴, 행/열 추가 + 버튼)은 라이브러리
    기본값이 평상시 opacity 0.15라 표 주변에 항상 비쳐 보인다. Notion처럼 표에
    hover했을 때만 드러나도록 조정한다.
