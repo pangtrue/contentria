@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import DashboardNav from './DashboardNav';
+import DashboardProfileCard from './DashboardProfileCard';
 import { BlogInfo } from '@/types/api/blogs';
 
 interface DashboardSidebarProps {
@@ -7,22 +7,22 @@ interface DashboardSidebarProps {
 }
 
 /**
- * Desktop-only sidebar. On mobile the same nav is served by DashboardMobileNav —
- * a Sheet whose trigger lives inside the header, so there is no longer a fixed
- * overlay button colliding with the header logo.
+ * Desktop-only sidebar: two stacked cards on the gray page background —
+ * a profile card (avatar/nickname/blog address) and the management menu.
+ * On mobile the same composition is served by DashboardMobileNav (header Sheet).
  */
 export default function DashboardSidebar({ blogInfos }: DashboardSidebarProps) {
   const firstBlogSlug = blogInfos && blogInfos.length > 0 ? blogInfos[0].slug : null;
 
   return (
-    <aside className="hidden w-64 bg-white shadow-lg md:block">
-      <div className="flex h-16 items-center border-b px-4">
-        <Link href="/dashboard" className="text-xl font-bold text-primary">
-          블로그 관리
-        </Link>
+    <aside className="hidden w-64 space-y-4 self-start md:block">
+      <div className="rounded-lg border bg-white shadow-sm">
+        <DashboardProfileCard blogSlug={firstBlogSlug} />
       </div>
 
-      <DashboardNav blogSlug={firstBlogSlug} />
+      <div className="rounded-lg border bg-white pb-4 shadow-sm">
+        <DashboardNav blogSlug={firstBlogSlug} />
+      </div>
     </aside>
   );
 }
