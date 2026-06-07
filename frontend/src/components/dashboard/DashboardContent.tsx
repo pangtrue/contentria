@@ -5,9 +5,8 @@ import {
   usePopularPostsQuery,
   useTrafficChartQuery,
 } from '@/hooks/queries/useDashboardQueries';
-import Link from 'next/link';
 import PopularPostList from './PopularPostList';
-import { ArrowRight, Eye, FileText, Loader2, MessageSquare } from 'lucide-react';
+import { Eye, FileText, Loader2, MessageSquare } from 'lucide-react';
 import TrafficChart, { TRAFFIC_SERIES } from './TrafficChart';
 import StatCard from './StatCard';
 import { User } from '@/types/api/user';
@@ -106,21 +105,13 @@ export default function DashboardContent({ user, blogInfos }: DashboardContentPr
         )}
       </div>
 
-      {/* 인기 글 — 다음 행 */}
+      {/* 인기 글 — 다음 행. 글 관리로 가는 링크는 사이드바 메뉴가 담당하므로 두지 않는다 */}
       <div className="rounded-lg bg-white p-5 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-baseline gap-2">
           <h2 className="text-lg font-semibold">인기 게시글</h2>
-          <Link href="/dashboard/posts" className="text-sm text-indigo-600 hover:text-indigo-800">
-            전체보기
-          </Link>
+          <span className="text-sm text-gray-400">최근 30일 조회수 기준</span>
         </div>
         <PopularPostList posts={popularPosts || []} />
-        <Link
-          href="/dashboard/posts"
-          className="mt-4 flex items-center justify-center text-sm text-indigo-600 hover:text-indigo-800"
-        >
-          모든 게시글 보기 <ArrowRight size={16} className="ml-1" />
-        </Link>
       </div>
     </div>
   );

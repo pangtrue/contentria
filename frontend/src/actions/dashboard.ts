@@ -14,9 +14,12 @@ export async function getDashboardStatsAction(blogSlug: string): Promise<StatsRe
   });
 }
 
-export async function getPopularPostsAction(blogSlug: string): Promise<PopularPostResponse[]> {
+export async function getPopularPostsAction(
+  blogSlug: string,
+  size = 10
+): Promise<PopularPostResponse[]> {
   return await apiServer.get<PopularPostResponse[]>(
-    `/api/blogs/${blogSlug}/dashboard/popular-posts`,
+    `/api/blogs/${blogSlug}/dashboard/popular-posts?size=${size}`,
     {
       requireAuth: true,
     }
