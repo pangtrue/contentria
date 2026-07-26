@@ -1,0 +1,13 @@
+CREATE TABLE blogs (
+    id UUID PRIMARY KEY,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id UUID NOT NULL,
+
+    CONSTRAINT fk_blogs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_blogs_user_id ON blogs(user_id);
