@@ -22,25 +22,25 @@ class VisitLog(
     @GeneratedValue
     @GeneratedUuidV7
     @Column(columnDefinition = "uuid")
-    val id: UUID? = null,
+    var id: UUID? = null,
 
     @Column(nullable = false)
-    val blogId: UUID,
+    var blogId: UUID,
 
     @Column(nullable = true)
-    val postId: UUID?,
+    var postId: UUID?,
 
     @Column(length = 45)
-    val visitorIp: String?,
+    var visitorIp: String?,
 
     @Column(columnDefinition = "TEXT")
-    val userAgent: String?,
+    var userAgent: String?,
 
     @Column(columnDefinition = "TEXT")
-    val refererUrl: String?,
+    var refererUrl: String?,
 
     @Column(nullable = false, updatable = false)
-    val visitedAt: ZonedDateTime = ZonedDateTime.now()
+    var visitedAt: ZonedDateTime = ZonedDateTime.now()
 ) {
     companion object {
         fun create(

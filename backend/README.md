@@ -155,23 +155,28 @@ See the `docs/` directory for detailed guidelines:
 
 ## Docker Build & Deploy
 
-Build and deploy Docker images to a remote server:
+The Dockerfiles only package a prebuilt jar — they don't run Gradle. Build the jar on
+the host first, then build and deploy the image to a remote server:
 
 ```bash
 # 1. Navigate to backend root
 cd backend/
 
-# 2. Build Docker image
+# 2. Build the jar
+./gradlew :blog-api:bootJar
+
+# 3. Build Docker image
 docker build -t contentria/blog-api:1.0 -f blog-api/Dockerfile .
 
-# 3. Save image to tar
+# 4. Save image to tar
 docker save -o blog-api.tar contentria/blog-api:1.0
 
-# 4. Transfer to remote server
+# 5. Transfer to remote server
 scp blog-api.tar <username>@<remote-host>:~
 ```
 
-> The same steps apply to `blog-batch`.
+> The same steps apply to `blog-batch` and `blog-worker` — swap the module name in
+> steps 2-4 (`:blog-batch:bootJar`, `-f blog-batch/Dockerfile`, `blog-batch.tar`, etc.).
 
 On the remote server:
 
