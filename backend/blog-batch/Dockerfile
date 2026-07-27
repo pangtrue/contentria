@@ -1,5 +1,5 @@
 # Prebuilt jar required: run `./gradlew :blog-batch:bootJar` before building this image.
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 RUN addgroup --system contentria && adduser --system --ingroup contentria contentria
 WORKDIR /app

@@ -1,5 +1,5 @@
 # Prebuilt jar required: run `./gradlew :blog-worker:bootJar` before building this image.
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # ffmpeg/ffprobe are invoked as subprocesses (see FfmpegTranscoder).
 RUN apk add --no-cache ffmpeg
