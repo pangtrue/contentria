@@ -43,15 +43,20 @@ class CustomOidcAuthenticationSuccessHandler(
                 throw ContentriaException(ErrorCode.OIDC_INVALID_PRINCIPAL)
             }
 
+        val subject = oidcUser.subject ?: run {
+            log.error { "Subject claim not found in OIDC token" }
+            throw ContentriaException(ErrorCode.OIDC_MISSING_SUBJECT)
+        }
+
         val socialLoginCommand = SocialLoginCommand(
             email = oidcUser.email ?: run {
-                log.error { "Email not found in OIDC claims for user: ${oidcUser.subject}" }
+                log.error { "Email not found in OIDC claims for user: $subject" }
                 throw ContentriaException(ErrorCode.OIDC_MISSING_EMAIL)
             },
-            name = oidcUser.fullName ?: oidcUser.givenName ?: oidcUser.subject,
+            name = oidcUser.fullName ?: oidcUser.givenName ?: subject,
             picture = oidcUser.picture,
             provider = AuthProvider.GOOGLE,
-            providerId = oidcUser.subject,
+            providerId = subject,
         )
 
         try {

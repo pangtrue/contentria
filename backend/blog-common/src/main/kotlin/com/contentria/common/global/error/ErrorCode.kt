@@ -36,6 +36,7 @@ enum class ErrorCode(
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "AU0009", "Invalid email or password."),
     USER_NOT_ACTIVATED(HttpStatus.FORBIDDEN, "AU0010", "User account is not active. Please verify your email or contact support."),
     REQUIRED_ROLE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "AU0011", "Required role not found in the system. Please contact support."),
+    OIDC_MISSING_SUBJECT(HttpStatus.BAD_REQUEST, "AU0012", "Subject claim not found in OIDC provider token."),
 
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "US0000", "User not found."),

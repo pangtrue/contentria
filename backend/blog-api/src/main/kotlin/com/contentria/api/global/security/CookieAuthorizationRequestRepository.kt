@@ -34,15 +34,10 @@ class CookieAuthorizationRequestRepository(
     }
 
     override fun saveAuthorizationRequest(
-        authorizationRequest: OAuth2AuthorizationRequest?,
+        authorizationRequest: OAuth2AuthorizationRequest,
         request: HttpServletRequest,
         response: HttpServletResponse
     ) {
-        if (authorizationRequest == null) {
-            deleteCookie(response)
-            return
-        }
-
         val cookie = Cookie(COOKIE_NAME, serialize(authorizationRequest)).apply {
             path = "/"
             isHttpOnly = true
