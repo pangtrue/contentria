@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("org.springframework.boot")
     id("io.spring.dependency-management")
@@ -28,25 +30,27 @@ java {
     }
 }
 
-// .env files live in src/main/resources so the IDE can load them, but they must never be
-// packaged: processResources would copy them into BOOT-INF/classes (→ Docker image layers),
-// leaking real secrets. Samples are excluded too — nothing in the jar needs them.
-tasks.withType<ProcessResources> {
-    exclude("**/.env", "**/.env.sample")
-}
-
-tasks.named<Test>("test") {
-    useJUnitPlatform()
-
-    maxHeapSize = "1G"
-
-    testLogging {
-        events("passed")
+tasks {
+    // .env files live in src/main/resources so the IDE can load them, but they must never be
+    // packaged: processResources would copy them into BOOT-INF/classes (→ Docker image layers),
+    // leaking real secrets. Samples are excluded too — nothing in the jar needs them.
+    withType<ProcessResources> {
+        exclude("**/.env", "**/.env.sample")
     }
-}
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    compilerOptions {
-        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    named<Test>("test") {
+        useJUnitPlatform()
+
+        maxHeapSize = "1G"
+
+        testLogging {
+            events("passed")
+        }
+    }
+
+    withType<KotlinCompile> {
+        compilerOptions {
+            freeCompilerArgs.add("-Xannotation-default-target=param-property")
+        }
     }
 }
