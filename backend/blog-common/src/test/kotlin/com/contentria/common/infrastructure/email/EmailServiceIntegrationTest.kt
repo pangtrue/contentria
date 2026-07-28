@@ -1,7 +1,7 @@
 package com.contentria.common.infrastructure.email
 
 import com.contentria.common.config.CommonTestConfiguration
-import com.contentria.common.global.config.CommonProperties
+import com.contentria.common.global.config.MailProperties
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -34,7 +34,7 @@ class EmailServiceIntegrationTest {
     private lateinit var emailService: EmailService
 
     @Autowired
-    private lateinit var commonProperties: CommonProperties
+    private lateinit var mailProperties: MailProperties
 
     @Value("\${test.email.recipient}")
     private lateinit var recipientEmail: String

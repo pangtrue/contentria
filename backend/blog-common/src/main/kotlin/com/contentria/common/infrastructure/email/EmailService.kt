@@ -1,6 +1,6 @@
 package com.contentria.common.infrastructure.email
 
-import com.contentria.common.global.config.CommonProperties
+import com.contentria.common.global.config.MailProperties
 import com.contentria.common.global.error.ContentriaException
 import com.contentria.common.global.error.ErrorCode
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -20,13 +20,13 @@ private val log = KotlinLogging.logger {}
  *
  * @param mailSender The Spring's JavaMailSender instance for sending emails.
  * @param templateEngine The Thymeleaf template engine for processing HTML email templates.
- * @param commonProperties Application-specific common properties, including mail configuration.
+ * @param mailProperties Mail configuration (Mailgun from-address).
  */
 @Service
 class EmailService(
     private val mailSender: JavaMailSender,
     private val templateEngine: SpringTemplateEngine,
-    private val commonProperties: CommonProperties,
+    private val mailProperties: MailProperties,
     private val applicationContext: ApplicationContext
 ) {
     /**
@@ -49,7 +49,7 @@ class EmailService(
 
             val htmlContent = templateEngine.process(AUTH_CODE_TEMPLATE_PATH, context)
 
-            helper.setFrom(commonProperties.mail.mailgun.fromAddress)
+            helper.setFrom(mailProperties.mailgun.fromAddress)
             helper.setTo(to)
             helper.setSubject("[Contentria] Verify your email")
             helper.setText(htmlContent, true)

@@ -1,6 +1,6 @@
 package com.contentria.batch.storage
 
-import com.contentria.batch.config.R2Properties
+import com.contentria.common.global.config.R2Properties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.s3.S3Client

@@ -1,4 +1,4 @@
-package com.contentria.batch.config
+package com.contentria.common.global.config
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -9,7 +9,7 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
 import java.net.URI
 
-/** Mirrors blog-api/blog-worker R2 config; GC only needs the (sync) S3Client. */
+/** Self-contained: importing this alone (without CommonConfig) does not require mail config. */
 @Configuration
 @EnableConfigurationProperties(R2Properties::class)
 class R2Config(

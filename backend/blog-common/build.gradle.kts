@@ -25,6 +25,10 @@ dependencies {
     // Slug 생성
     implementation(libs.slugify)
 
+    // Cloudflare R2 (S3-compatible): shared S3Client bean for blog-api/blog-batch/blog-worker
+    implementation(platform(libs.aws.bom))
+    implementation(libs.aws.s3)
+
     // 테스트 종속성 - 명시적으로 JUnit 프레임워크 지정
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

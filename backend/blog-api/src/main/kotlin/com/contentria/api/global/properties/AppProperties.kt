@@ -78,12 +78,9 @@ data class VideoProperties(
     ),
 )
 
+/** Media-upload usage policy. R2 connection info itself lives in blog-common's R2Properties (common.r2.*). */
 @Validated
 data class R2Properties(
-    @field:NotBlank val accessKeyId: String,
-    @field:NotBlank val secretAccessKey: String,
-    @field:NotBlank val endpoint: String,
-    @field:NotBlank val bucketName: String,
     @field:NotBlank val publicUrl: String,
     val presignedUrlTtlMinutes: Long = 10L,
     val maxFileSizeBytes: Long = 10 * 1024 * 1024, // 10MB

@@ -35,15 +35,14 @@ spring:
           timeout: 5000 # Read timeout
           writetimeout: 5000 # Write timeout
 
-# R2 access for the video GC job (loaded for all batch jobs — the context is shared,
-# so blog-batch-secret must provide these for every batch CronJob).
-r2:
-  access-key-id: ${R2_ACCESS_KEY_ID}
-  secret-access-key: ${R2_SECRET_ACCESS_KEY}
-  endpoint: ${R2_ENDPOINT}
-  bucket-name: ${R2_BUCKET_NAME}
-
 common:
   mail:
     mailgun:
       from-address: "Contentria <no-reply@${MAILGUN_DOMAIN}>"
+  # R2 access for the video GC job (loaded for all batch jobs — the context is shared,
+  # so blog-batch-secret must provide these for every batch CronJob).
+  r2:
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    endpoint: ${R2_ENDPOINT}
+    bucket-name: ${R2_BUCKET_NAME}

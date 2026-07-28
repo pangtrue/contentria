@@ -1,6 +1,7 @@
 package com.contentria.api.media.infrastructure
 
 import com.contentria.api.global.properties.AppProperties
+import com.contentria.common.global.config.R2Properties as CommonR2Properties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.core.sync.RequestBody
@@ -19,21 +20,20 @@ private val log = KotlinLogging.logger {}
 class R2StorageClient(
     private val s3Client: S3Client,
     private val s3Presigner: S3Presigner,
-    private val appProperties: AppProperties
+    private val appProperties: AppProperties,
+    private val commonR2Properties: CommonR2Properties,
 ) {
 
     fun generatePresignedPutUrl(storedKey: String, contentType: String, fileSize: Long): String {
-        val r2 = appProperties.r2
-
         val putObjectRequest = PutObjectRequest.builder()
-            .bucket(r2.bucketName)
+            .bucket(commonR2Properties.bucketName)
             .key(storedKey)
             .contentType(contentType)
             .contentLength(fileSize)
             .build()
 
         val presignRequest = PutObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofMinutes(r2.presignedUrlTtlMinutes))
+            .signatureDuration(Duration.ofMinutes(appProperties.r2.presignedUrlTtlMinutes))
             .putObjectRequest(putObjectRequest)
             .build()
 
@@ -43,10 +43,8 @@ class R2StorageClient(
     }
 
     fun deleteObject(storedKey: String) {
-        val r2 = appProperties.r2
-
         val deleteRequest = DeleteObjectRequest.builder()
-            .bucket(r2.bucketName)
+            .bucket(commonR2Properties.bucketName)
             .key(storedKey)
             .build()
 
@@ -55,10 +53,8 @@ class R2StorageClient(
     }
 
     fun getObjectHeadBytes(storedKey: String, numBytes: Int): ByteArray {
-        val r2 = appProperties.r2
-
         val getRequest = GetObjectRequest.builder()
-            .bucket(r2.bucketName)
+            .bucket(commonR2Properties.bucketName)
             .key(storedKey)
             .range("bytes=0-${numBytes - 1}")
             .build()
@@ -68,10 +64,8 @@ class R2StorageClient(
     }
 
     fun getObjectBytes(storedKey: String): ByteArray {
-        val r2 = appProperties.r2
-
         val getRequest = GetObjectRequest.builder()
-            .bucket(r2.bucketName)
+            .bucket(commonR2Properties.bucketName)
             .key(storedKey)
             .build()
 
@@ -80,10 +74,8 @@ class R2StorageClient(
     }
 
     fun putObject(storedKey: String, bytes: ByteArray, contentType: String) {
-        val r2 = appProperties.r2
-
         val putRequest = PutObjectRequest.builder()
-            .bucket(r2.bucketName)
+            .bucket(commonR2Properties.bucketName)
             .key(storedKey)
             .contentType(contentType)
             .contentLength(bytes.size.toLong())
@@ -94,12 +86,10 @@ class R2StorageClient(
     }
 
     fun copyObject(sourceKey: String, destinationKey: String) {
-        val r2 = appProperties.r2
-
         val copyRequest = CopyObjectRequest.builder()
-            .sourceBucket(r2.bucketName)
+            .sourceBucket(commonR2Properties.bucketName)
             .sourceKey(sourceKey)
-            .destinationBucket(r2.bucketName)
+            .destinationBucket(commonR2Properties.bucketName)
             .destinationKey(destinationKey)
             .build()
 

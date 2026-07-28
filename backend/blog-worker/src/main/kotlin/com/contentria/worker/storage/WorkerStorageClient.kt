@@ -1,6 +1,6 @@
 package com.contentria.worker.storage
 
-import com.contentria.worker.config.R2Properties
+import com.contentria.common.global.config.R2Properties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.core.sync.RequestBody

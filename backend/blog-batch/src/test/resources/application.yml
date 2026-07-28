@@ -1,4 +1,9 @@
 spring:
+  # MailSenderAutoConfiguration only activates when spring.mail.host is set — needed so the
+  # JavaMailSender bean exists for EmailService (see the shadowing note further down).
+  mail:
+    host: localhost
+    port: 587
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -22,3 +27,17 @@ spring:
 logging:
   level:
     org.springframework.batch: DEBUG
+
+# This file shadows src/main/resources/application.yml on the test classpath entirely
+# (Gradle puts test/resources first, and Boot resolves a single classpath:/application.yml),
+# so every @ConfigurationProperties bean the app context needs — even ones unrelated to
+# what a given test actually exercises — must have its required values duplicated here too.
+common:
+  mail:
+    mailgun:
+      from-address: "Contentria <no-reply@test.contentria.com>"
+  r2:
+    access-key-id: test-access-key
+    secret-access-key: test-secret-key
+    endpoint: http://localhost:9000
+    bucket-name: test-bucket

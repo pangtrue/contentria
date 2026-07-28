@@ -1,6 +1,6 @@
 package com.contentria.common.config
 
-import com.contentria.common.global.config.CommonProperties
+import com.contentria.common.global.config.MailProperties
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
@@ -27,6 +27,6 @@ import org.springframework.context.annotation.Configuration
     ]
 )
 @ComponentScan(basePackages = ["com.contentria.common.infrastructure.email", "com.contentria.common.config"])
-@EnableConfigurationProperties(CommonProperties::class)
+@EnableConfigurationProperties(MailProperties::class)
 class CommonTestConfiguration {
 }

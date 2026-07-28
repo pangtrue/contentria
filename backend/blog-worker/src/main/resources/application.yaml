@@ -20,11 +20,12 @@ cloudflare:
     batch-size: 1
     visibility-timeout-ms: 1800000 # 30 min; must exceed worst-case transcode
 
-r2:
-  access-key-id: ${R2_ACCESS_KEY_ID}
-  secret-access-key: ${R2_SECRET_ACCESS_KEY}
-  endpoint: ${R2_ENDPOINT}
-  bucket-name: ${R2_BUCKET_NAME}
+common:
+  r2:
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    endpoint: ${R2_ENDPOINT}
+    bucket-name: ${R2_BUCKET_NAME}
 
 transcode:
   ffmpeg-path: ffmpeg

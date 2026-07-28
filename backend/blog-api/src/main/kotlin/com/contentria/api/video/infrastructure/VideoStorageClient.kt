@@ -1,6 +1,7 @@
 package com.contentria.api.video.infrastructure
 
 import com.contentria.api.global.properties.AppProperties
+import com.contentria.common.global.config.R2Properties as CommonR2Properties
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
@@ -18,21 +19,20 @@ private val log = KotlinLogging.logger {}
 @Component
 class VideoStorageClient(
     private val s3Presigner: S3Presigner,
-    private val appProperties: AppProperties
+    private val appProperties: AppProperties,
+    private val commonR2Properties: CommonR2Properties,
 ) {
 
     fun generatePresignedPutUrl(key: String, contentType: String, fileSize: Long): String {
-        val r2 = appProperties.r2
-
         val putObjectRequest = PutObjectRequest.builder()
-            .bucket(r2.bucketName)
+            .bucket(commonR2Properties.bucketName)
             .key(key)
             .contentType(contentType)
             .contentLength(fileSize)
             .build()
 
         val presignRequest = PutObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofMinutes(r2.presignedUrlTtlMinutes))
+            .signatureDuration(Duration.ofMinutes(appProperties.r2.presignedUrlTtlMinutes))
             .putObjectRequest(putObjectRequest)
             .build()
 
