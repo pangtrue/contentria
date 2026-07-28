@@ -8,3 +8,6 @@ data:
   TZ: "Asia/Seoul"
   SPRING_PROFILES_ACTIVE: "prod"
   DATABASE_URL: "jdbc:postgresql://postgresql.databases.svc.cluster.local:5432/postgres?currentSchema=contentria"
+  MAILGUN_HOST: "smtp.mailgun.org"
+  MAILGUN_PORT: "587"
+  MAILGUN_DOMAIN: "contentria.com"

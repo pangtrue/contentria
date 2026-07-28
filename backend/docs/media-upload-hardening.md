@@ -39,7 +39,7 @@ Daily byte quota (100 MB/day) and per-post image limit (20 images) are enforced 
 ### Action
 
 - Added Bucket4j + JCache (Caffeine) dependency to `blog-api`.
-- Configured `mediaRateLimitingFilter` in `application.yaml` (30/min burst + 100/day sustained, filter-order 90).
+- Configured `mediaRateLimitingFilter` in `application.yml` (30/min burst + 100/day sustained, filter-order 90).
 - Created `UserIdResolver` to extract userId from `SecurityContextHolder` for per-user bucket keys.
 - Added `dailyUploadLimitBytes` (100 MB) and `maxImagesPerPost` (20) to `AppProperties.R2Properties`.
 - Added `validateDailyUploadQuota()` and `validatePostImageLimit()` in `MediaService`.

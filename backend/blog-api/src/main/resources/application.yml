@@ -206,5 +206,4 @@ app:
 common:
   mail:
     mailgun:
-      domain: ${MAILGUN_DOMAIN}
       from-address: "Contentria <no-reply@${MAILGUN_DOMAIN}>"
