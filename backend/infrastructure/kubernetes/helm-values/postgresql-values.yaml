@@ -1,0 +1,6 @@
+primary:
+  extendedConfiguration: |-
+    shared_preload_libraries = 'pg_stat_statements,auto_explain'
+    pg_stat_statements.track = top
+    auto_explain.log_min_duration = 1000   # ms 이상 걸린 쿼리 실행계획 자동 로그
+    auto_explain.log_analyze = true
