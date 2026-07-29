@@ -1,4 +1,4 @@
-package com.contentria.common.domain.model
+package com.contentria.common.global.model
 
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners

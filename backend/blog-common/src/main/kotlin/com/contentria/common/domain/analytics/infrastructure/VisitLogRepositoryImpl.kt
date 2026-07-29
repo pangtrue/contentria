@@ -1,6 +1,7 @@
-package com.contentria.common.domain.analytics.repository
+package com.contentria.common.domain.analytics.infrastructure
 
 import com.contentria.common.domain.analytics.VisitLog
+import com.contentria.common.domain.analytics.VisitLogRepository
 import org.springframework.stereotype.Repository
 import java.time.ZonedDateTime
 import java.util.*

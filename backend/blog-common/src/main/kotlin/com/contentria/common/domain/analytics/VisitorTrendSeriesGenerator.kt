@@ -9,8 +9,14 @@ data class DailyTrendPoint(
     val views: Long
 )
 
+/**
+ * Domain service: stateless, takes domain input (entities/values) and computes a result.
+ * Belongs in the domain layer, so it returns domain vocabulary only — here a value object
+ * (DailyTrendPoint), never a DTO. The application layer calls this and is responsible for
+ * converting the returned VO into a DTO (see AnalyticsService.getVisitorTrend).
+ */
 @Component
-class VisitorTrendProcessor {
+class VisitorTrendSeriesGenerator {
 
     fun generateTrendSeries(
         startDate: LocalDate,

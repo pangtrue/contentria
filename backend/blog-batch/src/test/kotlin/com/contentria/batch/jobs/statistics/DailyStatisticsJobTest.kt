@@ -2,8 +2,8 @@ package com.contentria.batch.jobs.statistics
 
 import com.contentria.batch.global.config.TestContainerConfig
 import com.contentria.common.domain.analytics.VisitLog
-import com.contentria.common.domain.analytics.repository.DailyStatisticsRepository
-import com.contentria.common.domain.analytics.repository.VisitLogRepository
+import com.contentria.common.domain.analytics.DailyStatisticsRepository
+import com.contentria.common.domain.analytics.VisitLogRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

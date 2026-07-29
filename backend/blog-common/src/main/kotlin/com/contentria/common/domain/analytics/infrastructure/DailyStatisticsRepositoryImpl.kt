@@ -1,6 +1,7 @@
-package com.contentria.common.domain.analytics.repository
+package com.contentria.common.domain.analytics.infrastructure
 
 import com.contentria.common.domain.analytics.DailyStatistics
+import com.contentria.common.domain.analytics.DailyStatisticsRepository
 import com.contentria.common.domain.analytics.PopularPostStatProjection
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository

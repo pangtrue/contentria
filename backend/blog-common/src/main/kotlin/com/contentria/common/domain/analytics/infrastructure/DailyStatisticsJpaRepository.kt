@@ -1,4 +1,4 @@
-package com.contentria.common.domain.analytics.repository
+package com.contentria.common.domain.analytics.infrastructure
 
 import com.contentria.common.domain.analytics.DailyStatistics
 import com.contentria.common.domain.analytics.PopularPostStatProjection

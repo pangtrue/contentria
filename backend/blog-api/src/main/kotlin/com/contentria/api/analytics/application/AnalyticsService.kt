@@ -4,9 +4,9 @@ import com.contentria.api.analytics.application.dto.PopularPostStatInfo
 import com.contentria.api.analytics.application.dto.VisitorTrendInfo
 import com.contentria.api.analytics.application.dto.VisitStatsInfo
 import com.contentria.common.domain.analytics.StatisticsCalculator
-import com.contentria.common.domain.analytics.VisitorTrendProcessor
-import com.contentria.common.domain.analytics.repository.DailyStatisticsRepository
-import com.contentria.common.domain.analytics.repository.VisitLogRepository
+import com.contentria.common.domain.analytics.VisitorTrendSeriesGenerator
+import com.contentria.common.domain.analytics.DailyStatisticsRepository
+import com.contentria.common.domain.analytics.VisitLogRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -19,7 +19,7 @@ class AnalyticsService(
     private val visitLogRepository: VisitLogRepository,
     private val dailyStatisticsRepository: DailyStatisticsRepository,
     private val calculator: StatisticsCalculator,
-    private val visitorTrendProcessor: VisitorTrendProcessor
+    private val visitorTrendSeriesGenerator: VisitorTrendSeriesGenerator
 ) {
     fun getVisitStats(blogId: UUID): VisitStatsInfo {
         val (todayVisitors, todayViews) = fetchTodayMetrics(blogId)
@@ -110,7 +110,7 @@ class AnalyticsService(
             0L to 0L
         }
 
-        val trendSeriesMap = visitorTrendProcessor.generateTrendSeries(
+        val trendSeriesMap = visitorTrendSeriesGenerator.generateTrendSeries(
             startDate = startDate,
             endDate = endDate,
             historyStatsMap = historyStatsMap,
