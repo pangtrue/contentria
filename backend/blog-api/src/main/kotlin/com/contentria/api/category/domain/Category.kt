@@ -7,10 +7,7 @@ import org.hibernate.annotations.BatchSize
 import java.util.*
 
 @Entity
-@Table(
-    name = "categories",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["blog_id", "slug"])]
-)
+@Table(name = "categories")
 class Category(
     @Id
     @GeneratedValue

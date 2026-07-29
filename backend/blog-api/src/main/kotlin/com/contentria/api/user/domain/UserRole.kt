@@ -4,7 +4,7 @@ import com.contentria.common.global.model.BaseEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "user_roles", uniqueConstraints = [UniqueConstraint(columnNames = ["user_id", "role_id"])])
+@Table(name = "user_roles")
 @IdClass(UserRoleId::class)
 class UserRole(
     @Id

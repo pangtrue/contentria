@@ -7,11 +7,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 @Entity
-@Table(
-    name = "posts", uniqueConstraints = [
-        UniqueConstraint(name = "uq_posts_blog_slug", columnNames = ["blog_id", "slug"])
-    ]
-)
+@Table(name = "posts")
 class Post(
     @Id
     @GeneratedValue

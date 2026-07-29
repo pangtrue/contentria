@@ -6,11 +6,7 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(
-    name = "videos", uniqueConstraints = [
-        UniqueConstraint(name = "uq_videos_raw_key", columnNames = ["raw_key"])
-    ]
-)
+@Table(name = "videos")
 class Video(
     @Id
     @GeneratedValue
