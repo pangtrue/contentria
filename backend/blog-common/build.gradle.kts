@@ -1,8 +1,10 @@
 plugins {
-    id("kotlin-common-conventions")
+    id("contentria-spring-library-conventions")
 }
 
 dependencies {
+    implementation(project(":core"))
+
     // Spring Boot 기본
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -50,12 +52,4 @@ tasks.test {
             excludeTags("real-mail-test")
         }
     }
-}
-
-tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    enabled = false
-}
-
-tasks.named<Jar>("jar") {
-    enabled = true
 }

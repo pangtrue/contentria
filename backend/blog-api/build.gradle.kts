@@ -1,6 +1,6 @@
 plugins {
-    id("kotlin-common-conventions")
-    kotlin("kapt")
+    id("contentria-spring-boot-app-conventions")
+//    kotlin("kapt")
 }
 
 dependencies {
@@ -18,7 +18,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jackson")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+//    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // Security & JWT
     implementation("org.springframework.boot:spring-boot-starter-security")

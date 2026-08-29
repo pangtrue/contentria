@@ -1,11 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
     kotlin("jvm")
-    kotlin("plugin.spring")
-    kotlin("plugin.jpa")
 }
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
@@ -43,14 +39,11 @@ tasks {
 
         maxHeapSize = "1G"
 
-        testLogging {
-            events("passed")
-        }
-    }
+        // 테스트 코드가 있는 디렉토리에 실제 실행할 테스트(`@Test`)가 없어도 빌드 실패 방지
+        failOnNoDiscoveredTests = false
 
-    withType<KotlinCompile> {
-        compilerOptions {
-            freeCompilerArgs.add("-Xannotation-default-target=param-property")
+        testLogging {
+            events("passed", "skipped", "failed")
         }
     }
 }

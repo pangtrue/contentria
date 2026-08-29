@@ -1,4 +1,4 @@
-package com.contentria.common.global.config
+package com.contentria.core.global.config
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank

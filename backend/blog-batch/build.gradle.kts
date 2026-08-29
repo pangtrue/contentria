@@ -1,8 +1,9 @@
 plugins {
-    id("kotlin-common-conventions")
+    id("contentria-spring-boot-app-conventions")
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation(project(":blog-common"))
 
     implementation("org.springframework.boot:spring-boot-starter-validation")

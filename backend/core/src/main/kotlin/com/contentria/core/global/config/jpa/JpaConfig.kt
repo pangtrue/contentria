@@ -1,4 +1,4 @@
-package com.contentria.common.global.config.jpa
+package com.contentria.core.global.config.jpa
 
 import org.springframework.boot.persistence.autoconfigure.EntityScan
 import org.springframework.context.annotation.Bean

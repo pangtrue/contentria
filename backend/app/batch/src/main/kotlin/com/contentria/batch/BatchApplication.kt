@@ -16,10 +16,10 @@ import kotlin.system.exitProcess
     JpaConfig::class
 )
 @SpringBootApplication
-class BlogBatchApplication
+class BatchApplication
 
 fun main(args: Array<String>) {
-    val context = runApplication<BlogBatchApplication>(*args) {
+    val context = runApplication<BatchApplication>(*args) {
         setWebApplicationType(WebApplicationType.NONE)
     }
     exitProcess(SpringApplication.exit(context))

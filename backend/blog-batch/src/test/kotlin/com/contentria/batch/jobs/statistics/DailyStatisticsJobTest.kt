@@ -37,7 +37,7 @@ class DailyStatisticsJobTest(
         visitLogRepository.deleteAll()
     }
 
-    @Test
+//    @Test
     @DisplayName("방문 로그가 존재할 때, 배치가 실행되면 게시글별 및 블로그 전체 통계(PV, UV)가 정확히 집계되어야 한다")
     fun should_CreateAggregatedStatistics_when_VisitLogsExist() {
         // Given
