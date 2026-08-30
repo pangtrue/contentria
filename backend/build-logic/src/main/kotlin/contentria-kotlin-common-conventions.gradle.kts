@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm")
 }
@@ -21,7 +19,7 @@ dependencies {
 
 java {
     toolchain {
-        val javaVersion = libs.findVersion("java").get().toString()
+        val javaVersion = libs.findVersion("java").get().requiredVersion
         languageVersion = JavaLanguageVersion.of(javaVersion)
     }
 }

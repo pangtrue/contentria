@@ -1,5 +1,6 @@
 plugins {
     id("contentria-spring-library-conventions")
+    id("contentria-jpa-conventions")
 }
 
 dependencies {
