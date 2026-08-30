@@ -1,7 +1,7 @@
 package com.contentria.common.infrastructure.email
 
 import com.contentria.common.config.CommonTestConfiguration
-import com.contentria.core.global.config.MailProperties
+import com.contentria.common.global.config.MailProperties
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

@@ -1,6 +1,6 @@
 package com.contentria.common.config
 
-import com.contentria.core.global.config.MailProperties
+import com.contentria.common.global.config.MailProperties
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration

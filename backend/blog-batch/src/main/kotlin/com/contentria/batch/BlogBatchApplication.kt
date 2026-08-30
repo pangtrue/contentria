@@ -1,7 +1,7 @@
 package com.contentria.batch
 
-import com.contentria.core.global.config.CommonConfig
-import com.contentria.core.global.config.jpa.JpaConfig
+import com.contentria.common.global.config.CommonConfig
+import com.contentria.common.global.config.jpa.JpaConfig
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.WebApplicationType
 import org.springframework.boot.autoconfigure.SpringBootApplication
